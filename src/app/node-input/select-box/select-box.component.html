@@ -1,23 +1,71 @@
-<div>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<mat-card>
   <div>
-    <label for="remains">Available Nodes</label>
-    <div>
-      <select name="multipleSelect" id="remains" ng-model="" multiple>
-        <option value="option-1">Option 1</option>
-      </select>
-    </div>
+    <mat-form-field class="chip_label_list">
+      <mat-chip-list #labelList>
+        <mat-chip *ngFor="let label of labels" (remove)="removeLabel(label)">
+          {{label}}
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+      </mat-chip-list>
+      <input placeholder="New Label..."
+             [matChipInputFor]="labelList"
+             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+             (matChipInputTokenEnd)="addLabel($event)"/>
+    </mat-form-field>
   </div>
 
-  <div>
-    <div>
-      <button> -></button>
+  <div fxLayout="row">
+    <div fxFlex="49" style="background: cadetblue;">
+      <div fxLayout="column">
+        <div class="list_box_title">
+          <label for="remains">Available Nodes</label>
+        </div>
+        <mat-card>
+          <mat-list class="list_box" id="remains">
+            <mat-list-item class="list_box_entry" *ngFor="let a_vtx of available_vertices">{{a_vtx.id}}</mat-list-item>
+          </mat-list>
+        </mat-card>
+      </div>
     </div>
-    <div>
-      <button> <-</button>
+
+
+    <div fxLayout="Column" fxFlex="none" fxLayoutAlign="center center" style="background: coral;" class="box_interval">
+
+      <button mat-icon-button class="inter_but">
+        <mat-icon>add</mat-icon>
+      </button>
+
+      <button mat-icon-button class="inter_but">
+        <mat-icon>remove</mat-icon>
+      </button>
+
+      <button mat-icon-button class="inter_but">
+        <mat-icon>redo</mat-icon>
+      </button>
+      <button mat-icon-button class="inter_but">
+        <mat-icon>undo</mat-icon>
+      </button>
+
+    </div>
+
+    <div fxFlex="49" style="background: darkgoldenrod;">
+      <div fxLayout="column">
+        <div class="list_box_title">
+          <label for="remains">Added Nodes</label>
+        </div>
+        <mat-card>
+          <mat-list class="list_box" id="added">
+            <mat-list-item class="list_box_entry">Option 1</mat-list-item>
+            <mat-list-item class="list_box_entry">Option 2</mat-list-item>
+            <mat-list-item class="list_box_entry">Option 3</mat-list-item>
+            <mat-list-item class="list_box_entry">Option 4</mat-list-item>
+          </mat-list>
+        </mat-card>
+      </div>
     </div>
   </div>
-</div>
-
+</mat-card>
 
 
 
