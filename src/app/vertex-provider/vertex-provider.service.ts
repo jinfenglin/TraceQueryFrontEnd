@@ -16,8 +16,10 @@ export class VertexProviderService {
    */
   getVertices(labels): Observable<Vertex[]> {
     const vertices: Vertex[] = [
-      {id: '1', content: 'foo'},
-      {id: '2', content: 'bar'}];
+      {id: '1', content: 'foo', label: 'Apple'},
+      {id: '2', content: 'bar', label: 'Lime'},
+      {id: '3', content: 'foobar', label: 'Lemon'}];
+
     return of(vertices);
   }
 }
