@@ -1,4 +1,13 @@
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <div>
-  <app-select-box></app-select-box>
+  <app-select-box (reportSelected)="receiveSources($event)">Source Vertex Input</app-select-box>
+  <app-select-box (reportSelected)="receiveTarget($event)">TargetVertex Input</app-select-box>
+  <mat-card fxLayoutAlign="space-between center">
+    <mat-checkbox [(ngModel)]="traceDynoEnabled">Enable Trace Engine</mat-checkbox>
+    <button class="mat-primary" mat-raised-button> Submit</button>
+  </mat-card>
+  <!--mat-list> //TODO debug display, remove
+    <mat-list-item *ngFor='let vtx of sourceVertices'> {{vtx.id}}</mat-list-item>
+  </mat-list-->
 </div>
 

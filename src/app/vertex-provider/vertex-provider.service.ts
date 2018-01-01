@@ -18,7 +18,15 @@ export class VertexProviderService {
     const vertices: Vertex[] = [
       {id: '1', content: 'foo', label: 'Apple'},
       {id: '2', content: 'bar', label: 'Lime'},
-      {id: '3', content: 'foobar', label: 'Lemon'}];
+      {id: '3', content: 'foobar', label: 'Lemon'},
+      {id: '4', content: 'foobar', label: 'Lemon'},
+      {id: '5', content: 'foobar', label: 'Lemon'},
+      {id: '6', content: 'foobar', label: 'Lemon'},
+      {id: '7', content: 'foobar', label: 'Lemon'},
+      {id: '8', content: 'foobar', label: 'Lemon'},
+      {id: '9', content: 'foobar', label: 'Lemon'},
+      {id: '10', content: 'foobar', label: 'Lemon'},
+    ];
 
     return of(vertices);
   }

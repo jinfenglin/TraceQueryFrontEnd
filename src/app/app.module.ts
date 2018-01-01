@@ -1,22 +1,24 @@
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {BrowserModule} from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {NgModule} from '@angular/core';
-import {MyMaterialModule} from './material.module';
+import {MyMaterialModule} from './material/material.module';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AppComponent} from './app.component';
 import {NodeInputComponent} from './node-input/node-input.component';
 import {SelectBoxComponent} from './node-input/select-box/select-box.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {VertexProviderService} from './vertex-provider/vertex-provider.service';
-
+import {TraceGraphComponent} from './trace-graph/trace-graph.component';
+import {AppRoutingModule} from './router/app-routing.module';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     NodeInputComponent,
-    SelectBoxComponent
+    SelectBoxComponent,
+    TraceGraphComponent
   ],
   imports: [
     BrowserModule,
@@ -24,6 +26,7 @@ import {VertexProviderService} from './vertex-provider/vertex-provider.service';
     FlexLayoutModule,
     BrowserAnimationsModule,
     FormsModule, ReactiveFormsModule,
+    AppRoutingModule,
   ],
   providers: [VertexProviderService],
   bootstrap: [AppComponent]

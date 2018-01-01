@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, Output, EventEmitter} from '@angular/core';
 import {MatChipInputEvent} from '@angular/material';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {Vertex} from '../../data-structure/vertex';
@@ -15,6 +15,9 @@ export class SelectBoxComponent implements OnInit {
   separatorKeysCodes = [ENTER, COMMA];
   addV: Vertex;
   rmV: Vertex;
+
+  @Output()
+  reportSelected: EventEmitter<Vertex[]> = new EventEmitter<Vertex[]>(); // Report the selected vertices to the parent components
 
   constructor(private vertexProvider: VertexProviderService) {
   }
@@ -55,6 +58,7 @@ export class SelectBoxComponent implements OnInit {
   addVertex(): void {
     if (this.addV) {
       this.selected_vertices.push(this.addV)
+      this.reportSelected.emit(this.selected_vertices);
       const index = this.available_vertices.indexOf(this.addV);
       if (index >= 0) {
         this.available_vertices.splice(index, 1);
@@ -71,6 +75,7 @@ export class SelectBoxComponent implements OnInit {
       const index = this.selected_vertices.indexOf(this.rmV);
       if (index >= 0) {
         this.selected_vertices.splice(index, 1);
+        this.reportSelected.emit(this.selected_vertices)
         this.rmV = null;
       } else {
         console.log(this.rmV.id, 'not found in selected vertices');
