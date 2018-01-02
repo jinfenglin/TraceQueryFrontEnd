@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {Vertex} from '../data-structure/vertex';
+import {Vertex} from '../../data-structure/vertex';
 import {of} from 'rxjs/observable/of';
 
 @Injectable()

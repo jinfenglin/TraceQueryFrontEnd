@@ -2,7 +2,7 @@ import {Component, OnInit, Output, EventEmitter} from '@angular/core';
 import {MatChipInputEvent} from '@angular/material';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {Vertex} from '../../data-structure/vertex';
-import {VertexProviderService} from '../../vertex-provider/vertex-provider.service';
+import {VertexProviderService} from '../../services/vertex-provider/vertex-provider.service';
 @Component({
   selector: 'app-select-box',
   templateUrl: './select-box.component.html',

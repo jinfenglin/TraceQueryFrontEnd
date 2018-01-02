@@ -1,6 +1,8 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {} from '@angular/material';
 import {Vertex} from '../data-structure/vertex';
+import {InputDisplayBridgeService} from "../services/input-display-bridge/input-display-bridge.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-node-input',
@@ -12,10 +14,8 @@ export class NodeInputComponent implements OnInit {
   sourceVertices: Vertex[];
   targetVertices: Vertex[];
 
-  @Output()
-  sourceToTarget: EventEmitter<Vertex[]> = new EventEmitter<Vertex[]>();
 
-  constructor() {
+  constructor(private bridge: InputDisplayBridgeService, private router: Router) {
     this.sourceVertices = [];
     this.targetVertices = [];
   }
@@ -29,6 +29,11 @@ export class NodeInputComponent implements OnInit {
 
   receiveTarget(income: Vertex[]): void {
     this.targetVertices = income;
+  }
+
+  clickSubmit(): void {
+    this.bridge.addSourceTarget([this.sourceVertices, this.targetVertices]);
+    this.router.navigateByUrl('traceGraph');
   }
 
 }

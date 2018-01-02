@@ -4,10 +4,7 @@
   <app-select-box (reportSelected)="receiveTarget($event)">TargetVertex Input</app-select-box>
   <mat-card fxLayoutAlign="space-between center">
     <mat-checkbox [(ngModel)]="traceDynoEnabled">Enable Trace Engine</mat-checkbox>
-    <button class="mat-primary" mat-raised-button> Submit</button>
+    <button class="mat-primary" mat-raised-button (click)="clickSubmit()"> Submit</button>
   </mat-card>
-  <!--mat-list> //TODO debug display, remove
-    <mat-list-item *ngFor='let vtx of sourceVertices'> {{vtx.id}}</mat-list-item>
-  </mat-list-->
 </div>
 
