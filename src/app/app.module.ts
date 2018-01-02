@@ -11,6 +11,7 @@ import {VertexProviderService} from './services/vertex-provider/vertex-provider.
 import {TraceGraphComponent} from './trace-graph/trace-graph.component';
 import {AppRoutingModule} from './router/app-routing.module';
 import {InputDisplayBridgeService} from './services/input-display-bridge/input-display-bridge.service';
+import {TraceQueryService} from './services/trace-query/trace-query.service';
 
 
 @NgModule({
@@ -28,7 +29,7 @@ import {InputDisplayBridgeService} from './services/input-display-bridge/input-d
     FormsModule, ReactiveFormsModule,
     AppRoutingModule,
   ],
-  providers: [VertexProviderService, InputDisplayBridgeService],
+  providers: [VertexProviderService, InputDisplayBridgeService, TraceQueryService],
   bootstrap: [AppComponent]
 })
 export class AppModule {

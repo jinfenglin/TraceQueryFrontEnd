@@ -1,8 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {} from '@angular/material';
 import {Vertex} from '../data-structure/vertex';
-import {InputDisplayBridgeService} from "../services/input-display-bridge/input-display-bridge.service";
-import {Router} from "@angular/router";
+import {InputDisplayBridgeService} from '../services/input-display-bridge/input-display-bridge.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-node-input',
