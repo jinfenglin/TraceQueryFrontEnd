@@ -1,5 +1,25 @@
+<!--link href="http://visjs.org/dist/vis-network.min.css" rel="stylesheet" type="text/css"/-->
 <p>
   trace-graph works!
 </p>
-<div #traceGraph></div>
+<mat-card>
+  <div #traceGraph class="graphArea"></div>
+</mat-card>
+<div fxLayout='row' fxLayoutAlign='space-between center' class='info_board'>
+
+  <mat-card fxFlex="50%">
+    <div>
+      {{selectedNode.id}}
+    </div>
+  </mat-card>
+
+  <mat-card fxFlex="50%">
+    <mat-list>
+      <mat-list-item *ngFor="let edge of selectedNodeEdges"> {{edge.source}} {{edge.target}}</mat-list-item>
+    </mat-list>
+  </mat-card>
+
+
+</div>
+
 
