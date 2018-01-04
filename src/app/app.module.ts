@@ -12,6 +12,7 @@ import {TraceGraphComponent} from './trace-graph/trace-graph.component';
 import {AppRoutingModule} from './router/app-routing.module';
 import {InputDisplayBridgeService} from './services/input-display-bridge/input-display-bridge.service';
 import {TraceQueryService} from './services/trace-query/trace-query.service';
+import {HttpClientModule} from "@angular/common/http";
 
 
 @NgModule({
@@ -28,6 +29,7 @@ import {TraceQueryService} from './services/trace-query/trace-query.service';
     BrowserAnimationsModule,
     FormsModule, ReactiveFormsModule,
     AppRoutingModule,
+    HttpClientModule,
   ],
   providers: [VertexProviderService, InputDisplayBridgeService, TraceQueryService],
   bootstrap: [AppComponent]

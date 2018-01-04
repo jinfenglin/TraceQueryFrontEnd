@@ -26,7 +26,6 @@ export class TraceQueryService {
     {id: '5', source: '3', target: '6', score: '1', method: 'default'},
     {id: '6', source: '4', target: '7', score: '1', method: 'default'},
     {id: '7', source: '4', target: '8', score: '1', method: 'default'},
-
   ];
 
   private getRawResult(source: Vertex[], target: Vertex[]): [Vertex[], Edge[]] {
