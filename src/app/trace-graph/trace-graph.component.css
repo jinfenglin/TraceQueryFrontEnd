@@ -3,4 +3,11 @@
 }
 .info_board {
   margin-top: 10px;
+  height: 300px;
+}
+
+hr {
+  margin: 10px 0 10px 0;
+  border-top: 1px solid rgba(0, 0, 0, .12);
+  width: 100%
 }
