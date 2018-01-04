@@ -26,24 +26,28 @@ Boxes display and selectAdd vertices
   overflow-x: auto;
   overflow-y: scroll;
   width: 100%;
-  height: 200px;
+  height: 100%;
+  border: solid;
 }
 
 .list_box_title {
   text-align: center;
 }
 
-/**
-The area between 2 boxes
- */
-.box_interval {
+.table_cell {
+  overflow: hidden;
+  max-width: 600px;
+  max-height: 50px
 }
 
-.inter_but {
-  max-width: 80%;
-  min-width: 10%;
-  margin: 2%;
+.cell_input {
+  width: 100%;
 }
+
+.right_float_button {
+  float: right;
+}
+
 
 
 

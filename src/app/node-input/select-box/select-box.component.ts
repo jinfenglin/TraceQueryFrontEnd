@@ -1,5 +1,5 @@
 import {Component, OnInit, Output, EventEmitter} from '@angular/core';
-import {MatChipInputEvent} from '@angular/material';
+import {MatChipInputEvent, MatTableDataSource} from '@angular/material';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {Vertex} from '../../data-structure/vertex';
 import {VertexProviderService} from '../../services/vertex-provider/vertex-provider.service';
@@ -15,6 +15,9 @@ export class SelectBoxComponent implements OnInit {
   separatorKeysCodes = [ENTER, COMMA];
   addV: Vertex;
   rmV: Vertex;
+  inputVals: any;
+
+  dataSource: MatTableDataSource<Vertex>;
 
   @Output()
   reportSelected: EventEmitter<Vertex[]> = new EventEmitter<Vertex[]>(); // Report the selected vertices to the parent components
@@ -24,6 +27,8 @@ export class SelectBoxComponent implements OnInit {
 
   ngOnInit() {
     this.getVertices();
+    this.dataSource = new MatTableDataSource<Vertex>(this.available_vertices);
+    this.inputVals = {};
   }
 
   getVertices(): void {
@@ -91,6 +96,14 @@ export class SelectBoxComponent implements OnInit {
   selectRemove(vtx: Vertex): void {
     this.rmV = vtx;
     console.log('remove vertex id=', this.rmV.id);
+  }
+
+  updateInput($event): void {
+    console.log('event=', $event)
+    const id = $event.target.id;
+    this.inputVals[id] = $event.target.value;
+    console.log('name:', id, '|value', $event.target.value);
+    console.log(this.inputVals)
   }
 
 }

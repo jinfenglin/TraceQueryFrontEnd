@@ -1,73 +1,69 @@
-<mat-card>
-  <div>
-    <mat-form-field class="chip_label_list">
-      <mat-chip-list #labelList>
-        <mat-chip *ngFor="let label of labels" (remove)="removeLabel(label)">
-          {{label}}
-          <mat-icon matChipRemove>cancel</mat-icon>
-        </mat-chip>
-      </mat-chip-list>
-      <input placeholder="New Label..."
-             [matChipInputFor]="labelList"
-             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-             (matChipInputTokenEnd)="addLabel($event)"/>
-    </mat-form-field>
-  </div>
+<div fxLayout="row" fxFlexAlign="space-around center">
+  <!-- The condition input card -->
+  <mat-card fxLayout="column" fxFlex>
+    <div>
+      <mat-form-field class="chip_label_list">
+        <mat-chip-list #labelList>
+          <mat-chip *ngFor="let label of labels" (remove)="removeLabel(label)">
+            {{label}}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip>
+        </mat-chip-list>
+        <input placeholder="New Label..."
+               [matChipInputFor]="labelList"
+               [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+               (matChipInputTokenEnd)="addLabel($event)"/>
+      </mat-form-field>
+    </div>
 
-  <div fxLayout="row">
-    <div fxFlex="49" style="background: cadetblue;">
+    <div fxFlex style="background: cadetblue;">
       <div fxLayout="column">
-        <div class="list_box_title">
-          <label for="remains">Available Nodes</label>
+        <mat-table #table [dataSource]="dataSource" style="overflow-y: auto; max-height: 500px">
+
+          <!-- Attrib Column -->
+          <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef> Attribute</mat-header-cell>
+            <mat-cell *matCellDef="let element" class="table_cell"> {{element.id}}</mat-cell>
+          </ng-container>
+
+          <!-- Input Column -->
+          <ng-container matColumnDef="label">
+            <mat-header-cell *matHeaderCellDef> Condition</mat-header-cell>
+            <mat-cell *matCellDef="let element" class="table_cell">
+              <mat-form-field class="cell_input">
+                <input matInput id='foo_{{element.id}}' placeholder="Condition Expression"
+                       (input)="updateInput($event)">
+              </mat-form-field>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="['id','label']"></mat-header-row>
+          <mat-row *matRowDef="let row; columns:['id','label'];"></mat-row>
+        </mat-table>
+        <div>
+          <button mat-raised-button class="mat-primary" class="right_float_button "> Apply</button>
         </div>
-        <mat-card>
-          <mat-list class="list_box" id="remains">
-            <mat-list-item (click)="selectAdd(a_vtx)"
-                           [ngClass]="{'list_box_entry':true, 'list_box_entry_selected': (addV === a_vtx) }"
-                           *ngFor="let a_vtx of available_vertices;">{{a_vtx.id}}
-            </mat-list-item>
-          </mat-list>
-        </mat-card>
+
       </div>
     </div>
+  </mat-card>
 
+  <!-- The node illustration card -->
+  <mat-card fxFlex>
+    <mat-list class="list_box" id="selected">
+      <mat-list-item (click)="selectRemove(s_vtx)"
+                     [ngClass]="{'list_box_entry':true, 'list_box_entry_selected': (rmV === s_vtx) }"
+                     *ngFor="let s_vtx of selected_vertices;">{{s_vtx.id}}
+      </mat-list-item>
+    </mat-list>
+  </mat-card>
 
-    <div fxLayout="Column" fxFlex="none" fxLayoutAlign="center center" style="background: coral;" class="box_interval">
+  <!-- The metrix card-->
+  <mat-card fxFLex>
+    place holder
+  </mat-card>
+</div>
 
-      <button mat-icon-button (click)="addVertex()" class="inter_but">
-        <mat-icon>add</mat-icon>
-      </button>
-
-      <button mat-icon-button (click)="removeVertex()" class="inter_but">
-        <mat-icon>remove</mat-icon>
-      </button>
-
-      <button mat-icon-button class="inter_but">
-        <mat-icon>redo</mat-icon>
-      </button>
-      <button mat-icon-button class="inter_but">
-        <mat-icon>undo</mat-icon>
-      </button>
-
-    </div>
-
-    <div fxFlex="49" style="background: darkgoldenrod;">
-      <div fxLayout="column">
-        <div class="list_box_title">
-          <label for="selected">Added Nodes</label>
-        </div>
-        <mat-card>
-          <mat-list class="list_box" id="selected">
-            <mat-list-item (click)="selectRemove(s_vtx)"
-                           [ngClass]="{'list_box_entry':true, 'list_box_entry_selected': (rmV === s_vtx) }"
-                           *ngFor="let s_vtx of selected_vertices;">{{s_vtx.id}}
-            </mat-list-item>
-          </mat-list>
-        </mat-card>
-      </div>
-    </div>
-  </div>
-</mat-card>
 
 
 
