@@ -5,7 +5,7 @@ import {Vertex} from '../../data-structure/vertex';
 import {VertexProviderService} from '../../services/vertex-provider/vertex-provider.service';
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {Observable} from 'rxjs/Observable';
-import {FlatLabelAttNames} from '../../data-structure/LabelAttribModels';
+import {FlatLabelAttNames, LabelAttribCondition} from '../../data-structure/LabelAttribModels';
 @Component({
   selector: 'app-select-box',
   templateUrl: './select-box.component.html',
@@ -15,7 +15,7 @@ export class SelectBoxComponent implements OnInit {
   labels = ['Improvement']; // Labels added by the user
   verticesRepo: Vertex[]; // The vertices selected after applying the conditions
   separatorKeysCodes = [ENTER, COMMA];
-  inputVals: any;
+  inputVals: Map<string, Map<string, string>>;
   dataSource: FlatLabelAttribDataSource;
 
   idTable: any;
@@ -24,9 +24,8 @@ export class SelectBoxComponent implements OnInit {
   reportSelected: EventEmitter<Vertex[]> = new EventEmitter<Vertex[]>(); // Report the selected vertices to the parent components
 
   constructor(private vertexProvider: VertexProviderService) {
-    this.getVertices();
     this.dataSource = new FlatLabelAttribDataSource(this.vertexProvider.getAttribs(this.labels));
-    this.inputVals = {};
+    this.inputVals = new Map<string, Map<string, string>>();
     this.idTable = {};
   }
 
@@ -43,7 +42,7 @@ export class SelectBoxComponent implements OnInit {
     const input = event.input;
     const value = event.value;
 
-    // Add our label
+// Add our label
     if ((value || '').trim()) {
       if (!(this.labels.includes(value.trim()))) {
         this.labels.push(value.trim());
@@ -51,7 +50,7 @@ export class SelectBoxComponent implements OnInit {
       }
     }
 
-    // Reset the input value
+// Reset the input value
     if (input) {
       input.value = '';
     }
@@ -68,8 +67,14 @@ export class SelectBoxComponent implements OnInit {
   updateInput($event): void {
     console.log('event=', $event);
     const id = $event.target.id;
-    this.inputVals[id] = $event.target.value;
-    console.log('name:', id, '|value', $event.target.value);
+    const label_AttName = this.fromId(id);
+    const label = label_AttName['label'];
+    const attribName = label_AttName['attribName'];
+    const value = $event.target.value;
+    if (!this.inputVals.has(label)) {
+      this.inputVals.set(label, new Map<string, string>());
+    }
+    this.inputVals.get(label).set(attribName, value);
     console.log(this.inputVals);
   }
 
@@ -83,7 +88,9 @@ export class SelectBoxComponent implements OnInit {
     return id;
   }
 
-  fromId(id: string): { label: string, attribName: string } {
+  fromId(id: string): {
+    label: string, attribName: string
+  } {
     return this.idTable[id];
   }
 }

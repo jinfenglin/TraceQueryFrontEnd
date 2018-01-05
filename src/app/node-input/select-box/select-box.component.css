@@ -3,7 +3,6 @@ The List display and select labels
  */
 .chip_label_list {
   width: 100%;
-  background: forestgreen !important;
 }
 
 /**
@@ -34,6 +33,7 @@ Boxes display and selectAdd vertices
 
 .input_table {
   overflow-y: auto;
+  max-height: 600px;
 }
 
 .inner_card {

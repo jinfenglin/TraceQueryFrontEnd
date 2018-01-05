@@ -27,7 +27,6 @@
       <div style="background: cadetblue;">
         <div fxLayout="column">
           <mat-table #table [dataSource]="dataSource" class="input_table">
-
             <ng-container matColumnDef="label">
               <mat-header-cell *matHeaderCellDef> Label</mat-header-cell>
               <mat-cell *matCellDef="let element" class="table_cell"> {{element.label}}</mat-cell>
@@ -54,7 +53,9 @@
       </div>
 
       <div fxLayout="row" fxLayoutAlign="end center">
-        <button mat-raised-button class="mat-primary right_float_button" style="margin-top: 20px"> Apply</button>
+        <button mat-raised-button class="mat-primary right_float_button" style="margin-top: 20px"
+                (click)="getVertices()"> Apply
+        </button>
       </div>
     </mat-card>
   </div>
