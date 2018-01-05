@@ -4,19 +4,10 @@ import {Edge} from '../../data-structure/edge';
 
 @Injectable()
 export class TraceQueryService {
-  json = '{"nodes": [{"caption": "foo1","type": "bar1","id": 1}, {"caption": "foo2","type": "bar2","id": 2}, {"caption": "foo3","type": "bar3","id": 3}], "edges": [{"source": 1,"target": 2,"caption": "ACTED_IN"},{"source": 2,"target": 3,"caption": "ACTED_IN"}]}'
-  nodes: Vertex[] = [
-    {id: '1', content: 'foo', label: 'Apple'},
-    {id: '2', content: 'bar', label: 'Lime'},
-    {id: '3', content: 'foobar', label: 'Lemon'},
-    {id: '4', content: 'foobar', label: 'Lemon'},
-    {id: '5', content: 'foobar', label: 'Lemon'},
-    {id: '6', content: 'foobar', label: 'Lemon'},
-    {id: '7', content: 'foobar', label: 'Lemon'},
-    {id: '8', content: 'foobar', label: 'Lemon'},
-    {id: '9', content: 'foobar', label: 'Lemon'},
-    {id: '10', content: 'foobar', label: 'Lemon'},
-  ];
+  json = '{"nodes": [{"caption": "foo1","type": "bar1","id": 1}, {"caption": "foo2","type": "bar2","id": 2},' +
+    ' {"caption": "foo3","type": "bar3","id": 3}], "edges": [{"source": 1,"target": 2,"caption": "ACTED_IN"},' +
+    '{"source": 2,"target": 3,"caption": "ACTED_IN"}]}';
+  nodes: Vertex[] = [];
 
   links: Edge[] = [
     {id: '1', source: '1', target: '2', score: '1', method: 'default'},

@@ -1,7 +1,9 @@
 import {Attributes} from './attributes';
 export class Vertex {
-  id: string;
-  label: string;
+  dbId: string;
+  artifType: string;
+  artifId: string;
   content: string;
-  //other: Attributes[];
+  path: string;
+  other: any;
 }

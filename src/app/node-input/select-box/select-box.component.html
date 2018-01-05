@@ -19,19 +19,16 @@
     <div fxFlex style="background: cadetblue;">
       <div fxLayout="column">
         <mat-table #table [dataSource]="dataSource" style="overflow-y: auto; max-height: 500px">
-
-          <!-- Attrib Column -->
           <ng-container matColumnDef="id">
             <mat-header-cell *matHeaderCellDef> Attribute</mat-header-cell>
-            <mat-cell *matCellDef="let element" class="table_cell"> {{element.id}}</mat-cell>
+            <mat-cell *matCellDef="let element" class="table_cell"> {{element.label}}</mat-cell>
           </ng-container>
 
-          <!-- Input Column -->
           <ng-container matColumnDef="label">
             <mat-header-cell *matHeaderCellDef> Condition</mat-header-cell>
             <mat-cell *matCellDef="let element" class="table_cell">
               <mat-form-field class="cell_input">
-                <input matInput id='foo_{{element.id}}' placeholder="Condition Expression"
+                <input matInput id='{{element}}' placeholder="Condition Expression"
                        (input)="updateInput($event)">
               </mat-form-field>
             </mat-cell>
@@ -51,9 +48,7 @@
   <!-- The node illustration card -->
   <mat-card fxFlex>
     <mat-list class="list_box" id="selected">
-      <mat-list-item (click)="selectRemove(s_vtx)"
-                     [ngClass]="{'list_box_entry':true, 'list_box_entry_selected': (rmV === s_vtx) }"
-                     *ngFor="let s_vtx of selected_vertices;">{{s_vtx.id}}
+      <mat-list-item *ngFor="let vtx of vertices_repo">{{vtx.dbId}}
       </mat-list-item>
     </mat-list>
   </mat-card>
