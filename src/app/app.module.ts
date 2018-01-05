@@ -12,7 +12,8 @@ import {TraceGraphComponent} from './trace-graph/trace-graph.component';
 import {AppRoutingModule} from './router/app-routing.module';
 import {InputDisplayBridgeService} from './services/input-display-bridge/input-display-bridge.service';
 import {TraceQueryService} from './services/trace-query/trace-query.service';
-import {HttpClientModule} from "@angular/common/http";
+import {HttpClientModule} from '@angular/common/http';
+import {KeysPipe} from './pips/keyPip';
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import {HttpClientModule} from "@angular/common/http";
     AppComponent,
     NodeInputComponent,
     SelectBoxComponent,
-    TraceGraphComponent
+    TraceGraphComponent,
+    KeysPipe
   ],
   imports: [
     BrowserModule,

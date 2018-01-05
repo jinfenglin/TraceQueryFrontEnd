@@ -1,5 +1,5 @@
 import {Component, OnInit, Output, EventEmitter} from '@angular/core';
-import {MatChipInputEvent, MatTableDataSource} from '@angular/material';
+import {MatChipInputEvent} from '@angular/material';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {Vertex} from '../../data-structure/vertex';
 import {VertexProviderService} from '../../services/vertex-provider/vertex-provider.service';
@@ -13,10 +13,12 @@ import {FlatLabelAttNames} from '../../data-structure/LabelAttribModels';
 })
 export class SelectBoxComponent implements OnInit {
   labels = ['Improvement']; // Labels added by the user
-  vertices_repo: Vertex[]; // The vertices selected after applying the conditions
+  verticesRepo: Vertex[]; // The vertices selected after applying the conditions
   separatorKeysCodes = [ENTER, COMMA];
   inputVals: any;
   dataSource: FlatLabelAttribDataSource;
+
+  idTable: any;
 
   @Output()
   reportSelected: EventEmitter<Vertex[]> = new EventEmitter<Vertex[]>(); // Report the selected vertices to the parent components
@@ -25,16 +27,15 @@ export class SelectBoxComponent implements OnInit {
     this.getVertices();
     this.dataSource = new FlatLabelAttribDataSource(this.vertexProvider.getAttribs(this.labels));
     this.inputVals = {};
+    this.idTable = {};
   }
 
   ngOnInit() {
   }
 
   getVertices(): void {
-    this.vertexProvider.getVertices(this.labels).subscribe(vs => {
-      console.log('get vertices from service:', vs);
-      this.vertices_repo = vs;
-      console.log('vertice_repo=', this.vertices_repo);
+    this.vertexProvider.getVertices(this.labels, this.inputVals).subscribe(vs => {
+      this.verticesRepo = vs;
     });
   }
 
@@ -46,8 +47,7 @@ export class SelectBoxComponent implements OnInit {
     if ((value || '').trim()) {
       if (!(this.labels.includes(value.trim()))) {
         this.labels.push(value.trim());
-        // this.vertexProvider.getAttribs([value.trim()]).subscribe(labelAttNameList => this.addFlatAttribForMultiLables(labelAttNameList));
-        this.dataSource = new FlatLabelAttribDataSource(this.vertexProvider.getAttribs(this.labels));
+        this.updateDataSource();
       }
     }
 
@@ -61,7 +61,7 @@ export class SelectBoxComponent implements OnInit {
     const index = this.labels.indexOf(label);
     if (index >= 0) {
       this.labels.splice(index, 1);
-      this.dataSource = new FlatLabelAttribDataSource(this.vertexProvider.getAttribs(this.labels));
+      this.updateDataSource();
     }
   }
 
@@ -71,6 +71,20 @@ export class SelectBoxComponent implements OnInit {
     this.inputVals[id] = $event.target.value;
     console.log('name:', id, '|value', $event.target.value);
     console.log(this.inputVals);
+  }
+
+  updateDataSource(): void {
+    this.dataSource = new FlatLabelAttribDataSource(this.vertexProvider.getAttribs(this.labels));
+  }
+
+  toId(label: string, attribName: string): string {
+    const id = label + attribName;
+    this.idTable[id] = {label: label, attribName: attribName};
+    return id;
+  }
+
+  fromId(id: string): { label: string, attribName: string } {
+    return this.idTable[id];
   }
 }
 
@@ -87,5 +101,4 @@ export class FlatLabelAttribDataSource extends DataSource<FlatLabelAttNames> {
   disconnect(collectionViewer: CollectionViewer): void {
     return;
   }
-
 }

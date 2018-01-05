@@ -3,7 +3,6 @@ import {Observable} from 'rxjs/Observable';
 import {Vertex} from '../../data-structure/vertex';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {FlatLabelAttNames} from '../../data-structure/LabelAttribModels';
-import {of} from 'rxjs/observable/of';
 
 @Injectable()
 export class VertexProviderService {
@@ -21,6 +20,7 @@ export class VertexProviderService {
     let httpParam = new HttpParams();
     httpParam = httpParam.append('labels', labels);
     const vertices = this.http.get<Vertex[]>(url, {params: httpParam});
+    vertices.subscribe(data => console.log(data))
     return vertices;
   }
 
@@ -29,6 +29,7 @@ export class VertexProviderService {
     let httpParam = new HttpParams();
     httpParam = httpParam.append('labels', labels);
     const labelAttribPairObsv = this.http.get<FlatLabelAttNames[]>(url, {params: httpParam});
+    labelAttribPairObsv.subscribe(data => console.log(data))
     return labelAttribPairObsv;
   }
 }

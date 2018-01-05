@@ -10,22 +10,10 @@ The List display and select labels
 Boxes display and selectAdd vertices
  */
 
-.list_box_entry {
-  width: 100%;
-  min-height: 20px;
-  max-height: 35px;
-  margin: auto;
-}
-
-.list_box_entry_selected {
-  background: azure;
-}
-
 .list_box {
   padding: 0;
   overflow-x: auto;
   overflow-y: scroll;
-  width: 100%;
   height: 100%;
   border: solid;
 }
@@ -44,8 +32,12 @@ Boxes display and selectAdd vertices
   width: 100%;
 }
 
-.right_float_button {
-  float: right;
+.input_table {
+  overflow-y: auto;
+}
+
+.inner_card {
+  height: 800px;
 }
 
 

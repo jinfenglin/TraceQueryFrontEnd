@@ -1,62 +1,83 @@
-<div fxLayout="row" fxFlexAlign="space-around center">
+<div fxLayout="row">
+  <!-- The metrix card-->
+  <div fxFlex.gt-lg="">
+    <mat-card class="inner_card">
+      place holder
+    </mat-card>
+  </div>
+
   <!-- The condition input card -->
-  <mat-card fxLayout="column" fxFlex>
-    <div>
-      <mat-form-field class="chip_label_list">
-        <mat-chip-list #labelList>
-          <mat-chip *ngFor="let label of labels" (remove)="removeLabel(label)">
-            {{label}}
-            <mat-icon matChipRemove>cancel</mat-icon>
-          </mat-chip>
-        </mat-chip-list>
-        <input placeholder="New Label..."
-               [matChipInputFor]="labelList"
-               [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-               (matChipInputTokenEnd)="addLabel($event)"/>
-      </mat-form-field>
-    </div>
-
-    <div fxFlex style="background: cadetblue;">
-      <div fxLayout="column">
-        <mat-table #table [dataSource]="dataSource" style="overflow-y: auto; max-height: 500px">
-          <ng-container matColumnDef="id">
-            <mat-header-cell *matHeaderCellDef> Attribute</mat-header-cell>
-            <mat-cell *matCellDef="let element" class="table_cell"> {{element.label}}</mat-cell>
-          </ng-container>
-
-          <ng-container matColumnDef="label">
-            <mat-header-cell *matHeaderCellDef> Condition</mat-header-cell>
-            <mat-cell *matCellDef="let element" class="table_cell">
-              <mat-form-field class="cell_input">
-                <input matInput id='{{element}}' placeholder="Condition Expression"
-                       (input)="updateInput($event)">
-              </mat-form-field>
-            </mat-cell>
-          </ng-container>
-
-          <mat-header-row *matHeaderRowDef="['id','label']"></mat-header-row>
-          <mat-row *matRowDef="let row; columns:['id','label'];"></mat-row>
-        </mat-table>
-        <div>
-          <button mat-raised-button class="mat-primary" class="right_float_button "> Apply</button>
-        </div>
-
+  <div fxFlex>
+    <mat-card fxLayout="column" class="inner_card">
+      <div>
+        <mat-form-field class="chip_label_list">
+          <mat-chip-list #labelList>
+            <mat-chip *ngFor="let label of labels" (remove)="removeLabel(label)">
+              {{label}}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+          </mat-chip-list>
+          <input placeholder="New Label..."
+                 [matChipInputFor]="labelList"
+                 [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                 (matChipInputTokenEnd)="addLabel($event)"/>
+        </mat-form-field>
       </div>
-    </div>
-  </mat-card>
+
+      <div style="background: cadetblue;">
+        <div fxLayout="column">
+          <mat-table #table [dataSource]="dataSource" class="input_table">
+
+            <ng-container matColumnDef="label">
+              <mat-header-cell *matHeaderCellDef> Label</mat-header-cell>
+              <mat-cell *matCellDef="let element" class="table_cell"> {{element.label}}</mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="attrib">
+              <mat-header-cell *matHeaderCellDef> Attribute</mat-header-cell>
+              <mat-cell *matCellDef="let element" class="table_cell"> {{element.attribName}}</mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="condition">
+              <mat-header-cell *matHeaderCellDef> Condition</mat-header-cell>
+              <mat-cell *matCellDef="let element" class="table_cell">
+                <mat-form-field class="cell_input">
+                  <input matInput id='{{toId(element.label, element.attribName)}}' placeholder="Condition Expression"
+                         (input)="updateInput($event)">
+                </mat-form-field>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="['label','attrib', 'condition']"></mat-header-row>
+            <mat-row *matRowDef="let row; columns:['label','attrib', 'condition'];"></mat-row>
+          </mat-table>
+        </div>
+      </div>
+
+      <div fxLayout="row" fxLayoutAlign="end center">
+        <button mat-raised-button class="mat-primary right_float_button" style="margin-top: 20px"> Apply</button>
+      </div>
+    </mat-card>
+  </div>
+
 
   <!-- The node illustration card -->
-  <mat-card fxFlex>
-    <mat-list class="list_box" id="selected">
-      <mat-list-item *ngFor="let vtx of vertices_repo">{{vtx.dbId}}
-      </mat-list-item>
-    </mat-list>
-  </mat-card>
+  <div fxFlex>
+    <mat-card fxFlex class="inner_card">
+      <mat-list class="list_box" id="selected">
+        <mat-list-item *ngFor="let vtx of verticesRepo">
+          <h3 mat-line><span>{{vtx.artifType | uppercase}} </span><span>{{vtx.artifId}} </span>
+          </h3>
+          <p mat-line="" *ngFor='let key of vtx|keys: "other"' style="overflow-x: hidden; max-width: 400px">
+            <span>{{key | uppercase}}:</span>
+            <span>{{vtx.other[key]}}</span>
+          </p>
+          <mat-divider mat-line=""></mat-divider>
+        </mat-list-item>
+      </mat-list>
+    </mat-card>
+  </div>
 
-  <!-- The metrix card-->
-  <mat-card fxFLex>
-    place holder
-  </mat-card>
+
 </div>
 
 
