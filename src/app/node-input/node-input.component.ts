@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {Vertex} from '../data-structure/vertex';
 import {InputDisplayBridgeService} from '../services/input-display-bridge/input-display-bridge.service';
 import {Router} from '@angular/router';
+import {LabelAttribCondition} from '../data-structure/LabelAttribModels';
+import {VertexProviderService} from "../services/vertex-provider/vertex-provider.service";
 
 @Component({
   selector: 'app-node-input',
@@ -10,11 +11,11 @@ import {Router} from '@angular/router';
 })
 export class NodeInputComponent implements OnInit {
   traceDynoEnabled = false;
-  sourceVertices: Vertex[];
-  targetVertices: Vertex[];
+  sourceVertices: LabelAttribCondition[];
+  targetVertices: LabelAttribCondition[];
 
 
-  constructor(private bridge: InputDisplayBridgeService, private router: Router) {
+  constructor(private bridge: InputDisplayBridgeService, private router: Router, private vertexProvider: VertexProviderService) {
     this.sourceVertices = [];
     this.targetVertices = [];
   }
@@ -22,17 +23,17 @@ export class NodeInputComponent implements OnInit {
   ngOnInit() {
   }
 
-  receiveSources(income: Vertex[]): void {
+  receiveSources(income: LabelAttribCondition[]): void {
     this.sourceVertices = income;
   }
 
-  receiveTarget(income: Vertex[]): void {
+  receiveTarget(income: LabelAttribCondition[]): void {
     this.targetVertices = income;
   }
 
   clickSubmit(): void {
+    console.log('Conditions submitted:', this.sourceVertices, this.targetVertices)
     this.bridge.addSourceTarget([this.sourceVertices, this.targetVertices]);
     this.router.navigateByUrl('traceGraph');
   }
-
 }

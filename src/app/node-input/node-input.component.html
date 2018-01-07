@@ -1,7 +1,7 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <div>
-  <app-select-box (reportSelected)="receiveSources($event)">Source Vertex Input</app-select-box>
-  <app-select-box (reportSelected)="receiveTarget($event)">TargetVertex Input</app-select-box>
+  <app-select-box (reportCondition)="receiveSources($event)">Source Vertex Input</app-select-box>
+  <app-select-box (reportCondition)="receiveTarget($event)">TargetVertex Input</app-select-box>
   <mat-card fxLayoutAlign="space-between center">
     <mat-checkbox [(ngModel)]="traceDynoEnabled">Enable Trace Engine</mat-checkbox>
     <button class="mat-primary" mat-raised-button (click)="clickSubmit()"> Submit</button>

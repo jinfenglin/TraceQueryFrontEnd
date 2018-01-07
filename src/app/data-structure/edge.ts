@@ -1,9 +1,10 @@
-import {Attributes} from './attributes';
+// Remember to update this file when the TraceLink class change in backend
 export class Edge {
-  id: string;
-  source: string;
-  target: string;
-  score: string;
+  dbId: string;
+  linkId: string;
+  sourceDbId: string;
+  targetDbId: string;
+  score: number;
+  linkType: string;
   method: string;
-  //other: Attributes;
 }

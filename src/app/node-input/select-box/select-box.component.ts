@@ -12,7 +12,7 @@ import {FlatLabelAttNames, LabelAttribCondition} from '../../data-structure/Labe
   styleUrls: ['./select-box.component.css']
 })
 export class SelectBoxComponent implements OnInit {
-  labels = ['Improvement']; // Labels added by the user
+  labels = []; // Labels added by the user
   verticesRepo: Vertex[]; // The vertices selected after applying the conditions
   separatorKeysCodes = [ENTER, COMMA];
   inputVals: Map<string, Map<string, string>>;
@@ -21,7 +21,8 @@ export class SelectBoxComponent implements OnInit {
   idTable: any;
 
   @Output()
-  reportSelected: EventEmitter<Vertex[]> = new EventEmitter<Vertex[]>(); // Report the selected vertices to the parent components
+  reportCondition: EventEmitter<LabelAttribCondition[]> =
+    new EventEmitter<LabelAttribCondition[]>(); // Report the selected vertices to the parent components
 
   constructor(private vertexProvider: VertexProviderService) {
     this.dataSource = new FlatLabelAttribDataSource(this.vertexProvider.getAttribs(this.labels));
@@ -32,8 +33,17 @@ export class SelectBoxComponent implements OnInit {
   ngOnInit() {
   }
 
-  getVertices(): void {
-    this.vertexProvider.getVertices(this.labels, this.inputVals).subscribe(vs => {
+  toLabelAttribCondition(conditions: Map<string, Map<string, string>>): LabelAttribCondition[] {
+    const rs: LabelAttribCondition[] = [];
+    for (const label of Array.from(conditions.keys())) {
+      const lac = new LabelAttribCondition(label, conditions.get(label));
+      rs.push(lac);
+    }
+    return rs;
+  }
+
+  previewCondition(): void {
+    this.vertexProvider.getVertices(this.labels, this.toLabelAttribCondition(this.inputVals)).subscribe(vs => {
       this.verticesRepo = vs;
     });
   }
@@ -42,30 +52,35 @@ export class SelectBoxComponent implements OnInit {
     const input = event.input;
     const value = event.value;
 
-// Add our label
-    if ((value || '').trim()) {
-      if (!(this.labels.includes(value.trim()))) {
-        this.labels.push(value.trim());
+    // Add our label
+    const label = (value).trim();
+    if (label.length > 0) {
+      if (!(this.labels.includes(label))) {
+        this.labels.push(label);
+        this.inputVals.set(label, new Map<string, string>());
+        console.log('Current inputvals:', this.inputVals);
         this.updateDataSource();
       }
     }
 
-// Reset the input value
+    // Reset the input value
     if (input) {
       input.value = '';
     }
+    this.reportCondition.emit(this.toLabelAttribCondition(this.inputVals));
   }
 
   removeLabel(label: any): void {
     const index = this.labels.indexOf(label);
     if (index >= 0) {
       this.labels.splice(index, 1);
+      this.inputVals.delete(label);
       this.updateDataSource();
     }
+    this.reportCondition.emit(this.toLabelAttribCondition(this.inputVals));
   }
 
   updateInput($event): void {
-    console.log('event=', $event);
     const id = $event.target.id;
     const label_AttName = this.fromId(id);
     const label = label_AttName['label'];
@@ -75,7 +90,7 @@ export class SelectBoxComponent implements OnInit {
       this.inputVals.set(label, new Map<string, string>());
     }
     this.inputVals.get(label).set(attribName, value);
-    console.log(this.inputVals);
+    this.reportCondition.emit(this.toLabelAttribCondition(this.inputVals));
   }
 
   updateDataSource(): void {

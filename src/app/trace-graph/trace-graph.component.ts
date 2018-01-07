@@ -1,10 +1,12 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {InputDisplayBridgeService} from '../services/input-display-bridge/input-display-bridge.service';
-import {Vertex} from '../data-structure/vertex';
 import {TraceQueryService} from '../services/trace-query/trace-query.service';
 import * as vis from 'vis';
 import {VisNode} from '../data-structure/visNode';
 import {VisEdge} from '../data-structure/visEdge';
+import {LabelAttribCondition} from '../data-structure/LabelAttribModels';
+import {Edge} from '../data-structure/edge';
+import {VertexProviderService} from "../services/vertex-provider/vertex-provider.service";
 @Component({
   selector: 'app-trace-graph',
   templateUrl: './trace-graph.component.html',
@@ -13,45 +15,61 @@ import {VisEdge} from '../data-structure/visEdge';
   ]
 })
 export class TraceGraphComponent implements OnInit, AfterViewInit {
-  sourceAndTarget: Vertex[][];
+  sourceAndTarget: LabelAttribCondition[][];
   @ViewChild('traceGraph') traceGraph;
   selectedNode: VisNode;
   selectedNodeEdges: VisEdge[];
+  nodeBook: Map<string, number>; // Record dbId to numeric id used in graph and by VisEdge
+  links: VisEdge[];
+  nodes: VisNode[];
+  nodeCnt: number;
 
-  constructor(private bridge: InputDisplayBridgeService, private traceProvider: TraceQueryService) {
-    this.selectedNode = {id: 2, label: 'Node 2'};
-    // this.bridge.getSourceTarget().subscribe(st => this.sourceAndTarget = st);
-    // const res = traceProvider.getJsonResult(this.sourceAndTarget[0], this.sourceAndTarget[1]);
-    //
-    // const config = {
-    //   dataSource: res,
-    // };
-    // const network = new vis.Network(this.traceGraph, data, options);
+  constructor(private bridge: InputDisplayBridgeService, private traceProvider: TraceQueryService, private vertexProvider: VertexProviderService) {
+    this.nodeBook = new Map<string, number>();
+    this.links = [];
+    this.nodes = [];
+    this.bridge.getSourceTarget().subscribe(st => this.sourceAndTarget = st);
+    this.nodeCnt = 0;
   }
 
   ngOnInit() {
   }
 
   ngAfterViewInit() {
-    const rawNode: VisNode[] = [
-      {id: 1, label: 'Node 1'},
-      {id: 2, label: 'Node 2'},
-      {id: 3, label: 'Node 3'},
-      {id: 4, label: 'Node 4'},
-      {id: 5, label: 'Node 5'}
-    ]
-    const nodes = new vis.DataSet(rawNode);
+    this.traceProvider.getTraceLinks(this.sourceAndTarget[0][0], this.sourceAndTarget[1][0]).subscribe(l => {
+        this.toVis(l);
+        console.log('debug- nodes to draw:', this.nodes);
+        console.log('debug- links to draw:', this.links);
+        this.drawGraph(this.nodes, this.links);
+      }
+    );
+  }
 
-    // create an array with edges
-    const rawEdge: VisEdge[] = [
-      {id: 1, from: 1, to: 3, title: 'score=1 \n method=default'},
-      {id: 2, from: 1, to: 2, title: 'score=1 \n method=default'},
-      {id: 3, from: 2, to: 4, title: 'score=1 \n method=default'},
-      {id: 4, from: 2, to: 5, title: 'score=1 \n method=default'},
-      {id: 5, from: 3, to: 3, title: 'score=1 \n method=default'}
-    ]
-    const edges = new vis.DataSet(rawEdge);
-    console.log(this.traceGraph)
+  registNodeAndGetVisId(dbId: string, label: string): number {
+    if (!this.nodeBook.has(dbId)) {
+      this.nodeBook.set(dbId, this.nodeCnt++);
+      const visId = this.nodeBook.get(dbId);
+      const visNode = {id: visId, label: label};
+      this.nodes.push(visNode);
+    }
+    return this.nodeBook.get(dbId);
+  }
+
+  toVis(rawEdges: Edge[]): void {
+    for (const rawEdge of rawEdges) {
+      const sourceVisId = this.registNodeAndGetVisId(rawEdge.sourceDbId, 'place holder');
+      const targetVisId = this.registNodeAndGetVisId(rawEdge.targetDbId, 'place holder');
+      const title = 'Method:' + rawEdge.method + ' Score:' + rawEdge.score;
+      const visLink: VisEdge = {id: this.links.length, from: sourceVisId, to: targetVisId, title: title};
+      this.links.push(visLink);
+    }
+  }
+
+  drawGraph(visNodes: VisNode[], visEdges: VisEdge[]): void {
+    const nodes = new vis.DataSet(visNodes);
+    const edges = new vis.DataSet(visEdges);
+    console.log('VisNode:', visNodes);
+    console.log('VisEdge:', visEdges);
     const data = {
       nodes: nodes,
       edges: edges

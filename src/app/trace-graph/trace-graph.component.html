@@ -7,13 +7,13 @@
 <div fxLayout='row' fxLayoutAlign='space-between center' class='info_board'>
 
   <mat-card fxFlex="50%" class="info_board">
-    {{selectedNode.id}}
+    <!--{{selectedNode.id}}-->
   </mat-card>
 
   <mat-card fxFlex="50%" class="info_board">
     <mat-list dense="true">
       <mat-list-item *ngFor="let edge of selectedNodeEdges; let last = last">
-        <div matLine> <h4>This is {{edge.id}}</h4> </div>
+        <div matLine><h4>This is {{edge.id}}</h4></div>
         <div matLine>
           <span> {{edge.from}} {{edge.to}} </span>
         </div>

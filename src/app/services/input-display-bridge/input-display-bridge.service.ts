@@ -1,22 +1,42 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {Vertex} from '../../data-structure/vertex';
 import {of} from 'rxjs/observable/of';
+import {QueryEdge} from '../../data-structure/queryEdge';
+import {LabelAttribCondition} from '../../data-structure/LabelAttribModels';
+import {Vertex} from "../../data-structure/vertex";
+
 
 @Injectable()
 export class InputDisplayBridgeService {
-  data: Vertex[][];
+  labelAndConditions: LabelAttribCondition[][];
+  vertices: Vertex[];
+  queryPath: QueryEdge[];
 
   constructor() {
-    this.data = [];
+    this.labelAndConditions = [];
+    this.queryPath = [];
   }
 
-  getSourceTarget(): Observable<Vertex[][]> {
-    return of(this.data);
+  getSourceTarget(): Observable<LabelAttribCondition[][]> {
+    return of(this.labelAndConditions);
   }
 
-  addSourceTarget(data: Vertex[][]): void {
-    this.data = data;
+  addSourceTarget(data: LabelAttribCondition[][]): void {
+    this.labelAndConditions = data;
+  }
+
+  addVertices(data: Vertex[]): void {
+    for (const v of data) {
+      this.vertices.push(v);
+    }
+  }
+
+  getVertices(): Observable<Vertex[]> {
+    return of(this.vertices);
+  }
+
+  addQueryPath(queryPath: QueryEdge[]) {
+    this.queryPath = queryPath;
   }
 
 }

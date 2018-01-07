@@ -1,4 +1,3 @@
-import {Attributes} from './attributes';
 export class Vertex {
   dbId: string;
   artifType: string;
