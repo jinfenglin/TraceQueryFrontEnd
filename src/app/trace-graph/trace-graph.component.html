@@ -16,7 +16,7 @@
         <mat-list>
           <mat-list-item *ngFor='let attKey of selectedNode.vertex|keys: "other"'>
             <label>{{attKey | uppercase}}:</label>
-            {{selectedNode.vertex.other[attKey]}}
+            {{ selectedNode.vertex.other[attKey]}}
           </mat-list-item>
         </mat-list>
       </mat-card-content>
@@ -26,12 +26,12 @@
   <mat-card fxFlex="50%" class="info_board">
     <mat-list dense="true">
       <mat-list-item *ngFor="let edge of selectedNodeEdges; let last = last">
-        <div matLine><h4>This is {{edge.id}}</h4></div>
-        <div matLine>
-          <span> {{edge.from}} {{edge.to}} </span>
-          <mat-divider></mat-divider>
-        </div>
-        <mat-divider></mat-divider>
+        <p mat-line="">{{edge.edge.linkType}}
+          <span>FROM: {{ edge.edge.sourceDbId}}</span>
+          <span>TO: {{ edge.edge.targetDbId}}</span>
+        </p>
+        <p mat-line=""><span>METHOD: {{edge.edge.method}}</span> <span>SCORE: {{edge.edge.score}}</span></p>
+        <mat-divider mat-line=""></mat-divider>
       </mat-list-item>
     </mat-list>
   </mat-card>

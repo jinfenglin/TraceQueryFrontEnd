@@ -14,6 +14,7 @@ export class TraceQueryService {
     let httpParam = new HttpParams();
     httpParam = httpParam.append('source', JSON.stringify(source));
     httpParam = httpParam.append('target', JSON.stringify(target));
+    httpParam = httpParam.append('useDyno', JSON.stringify(useDyno));
     const links = this.http.get<Edge[]>(url, {params: httpParam});
     return links;
   }
