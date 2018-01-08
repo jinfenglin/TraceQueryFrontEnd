@@ -12,7 +12,6 @@ import {FlatLabelAttNames, LabelAttribCondition} from '../../data-structure/Labe
   styleUrls: ['./select-box.component.css']
 })
 export class SelectBoxComponent implements OnInit {
-  labels = []; // Labels added by the user
   verticesRepo: Vertex[]; // The vertices selected after applying the conditions
   separatorKeysCodes = [ENTER, COMMA];
   inputVals: Map<string, Map<string, string>>;
@@ -25,9 +24,9 @@ export class SelectBoxComponent implements OnInit {
     new EventEmitter<LabelAttribCondition[]>(); // Report the selected vertices to the parent components
 
   constructor(private vertexProvider: VertexProviderService) {
-    this.dataSource = new FlatLabelAttribDataSource(this.vertexProvider.getAttribs(this.labels));
     this.inputVals = new Map<string, Map<string, string>>();
     this.idTable = {};
+    this.dataSource = new FlatLabelAttribDataSource(this.vertexProvider.getAttribs(this.getLabels()));
   }
 
   ngOnInit() {
@@ -43,7 +42,7 @@ export class SelectBoxComponent implements OnInit {
   }
 
   previewCondition(): void {
-    this.vertexProvider.getVertices(this.labels, this.toLabelAttribCondition(this.inputVals)).subscribe(vs => {
+    this.vertexProvider.getVertices(this.toLabelAttribCondition(this.inputVals)).subscribe(vs => {
       this.verticesRepo = vs;
     });
   }
@@ -55,8 +54,7 @@ export class SelectBoxComponent implements OnInit {
     // Add our label
     const label = (value).trim();
     if (label.length > 0) {
-      if (!(this.labels.includes(label))) {
-        this.labels.push(label);
+      if (!(this.inputVals.has(label))) {
         this.inputVals.set(label, new Map<string, string>());
         console.log('Current inputvals:', this.inputVals);
         this.updateDataSource();
@@ -71,9 +69,7 @@ export class SelectBoxComponent implements OnInit {
   }
 
   removeLabel(label: any): void {
-    const index = this.labels.indexOf(label);
-    if (index >= 0) {
-      this.labels.splice(index, 1);
+    if (this.inputVals.has(label)) {
       this.inputVals.delete(label);
       this.updateDataSource();
     }
@@ -94,7 +90,7 @@ export class SelectBoxComponent implements OnInit {
   }
 
   updateDataSource(): void {
-    this.dataSource = new FlatLabelAttribDataSource(this.vertexProvider.getAttribs(this.labels));
+    this.dataSource = new FlatLabelAttribDataSource(this.vertexProvider.getAttribs(this.getLabels()));
   }
 
   toId(label: string, attribName: string): string {
@@ -107,6 +103,10 @@ export class SelectBoxComponent implements OnInit {
     label: string, attribName: string
   } {
     return this.idTable[id];
+  }
+
+  getLabels(): string[] {
+    return Array.from(this.inputVals.keys());
   }
 }
 

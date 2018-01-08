@@ -12,7 +12,7 @@
       <div>
         <mat-form-field class="chip_label_list">
           <mat-chip-list #labelList>
-            <mat-chip *ngFor="let label of labels" (remove)="removeLabel(label)">
+            <mat-chip *ngFor="let label of getLabels()" (remove)="removeLabel(label)">
               {{label}}
               <mat-icon matChipRemove>cancel</mat-icon>
             </mat-chip>
