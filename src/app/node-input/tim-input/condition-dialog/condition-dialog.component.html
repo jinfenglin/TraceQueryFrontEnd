@@ -1,0 +1,67 @@
+<div fxLayout="row" style="height: 90%">
+  <!-- The condition input card -->
+  <div fxFlex="1 1 50%">
+    <mat-card fxLayout="column" style="height: 100%">
+      <div>
+        <mat-form-field class="cell_input">
+          <input matInput [(ngModel)]="labelBuffer" (keyup.enter)="addLabel()">
+        </mat-form-field>
+      </div>
+
+      <div class="input_table">
+        <mat-table #table [dataSource]="dataSource">
+          <ng-container matColumnDef="attrib">
+            <mat-header-cell *matHeaderCellDef> Attribute</mat-header-cell>
+            <mat-cell *matCellDef="let element" class="table_cell"> {{element.attribName}}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="condition">
+            <mat-header-cell *matHeaderCellDef> Condition</mat-header-cell>
+            <mat-cell *matCellDef="let element" class="table_cell">
+              <mat-form-field class="cell_input">
+                <input matInput id='{{element.attribName}}' (input)="updateInput($event)"
+                       [value]='display(element.attribName)'>
+              </mat-form-field>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="['attrib', 'condition']"></mat-header-row>
+          <mat-row *matRowDef="let row; columns:['attrib', 'condition'];"></mat-row>
+        </mat-table>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- The node illustration card -->
+  <div fxFlex="1 1 50%">
+    <mat-card style="height: 100%">
+      <mat-list class="list_box" id="selected">
+        <mat-list-item *ngFor="let vtx of filteredVertices">
+          <h3 mat-line><span>{{vtx.artifType | uppercase}} </span><span>{{vtx.artifId}} </span>
+          </h3>
+          <p mat-line="" *ngFor='let key of vtx|keys: "other"' style="overflow-x: hidden; max-width: 400px">
+            <span>{{key | uppercase}}:</span>
+            <span>{{vtx.other[key]}}</span>
+          </p>
+          <mat-divider mat-line=""></mat-divider>
+        </mat-list-item>
+      </mat-list>
+    </mat-card>
+  </div>
+</div>
+<mat-toolbar>
+  <div fxLayout="row" fxLayoutAlign="end center">
+    <button mat-raised-button class="mat-primary " style="margin-top: 20px"
+            (click)="previewCondition()"> View
+    </button>
+    <button mat-raised-button class="mat-primary " style="margin-top: 20px"
+            [mat-dialog-close]="data"> Submit
+    </button>
+    <button mat-raised-button class="mat-primary " style="margin-top: 20px"
+            (click)="onNoClick()"> Close
+    </button>
+  </div>
+</mat-toolbar>
+
+
+
+

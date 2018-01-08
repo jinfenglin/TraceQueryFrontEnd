@@ -7,7 +7,8 @@ import {VisEdge} from '../data-structure/visEdge';
 import {LabelAttribCondition} from '../data-structure/LabelAttribModels';
 import {Edge} from '../data-structure/edge';
 import {VertexProviderService} from '../services/vertex-provider/vertex-provider.service';
-import {Vertex} from "../data-structure/vertex";
+import {Vertex} from '../data-structure/vertex';
+import {QueryEdge} from "../data-structure/queryEdge";
 @Component({
   selector: 'app-trace-graph',
   templateUrl: './trace-graph.component.html',
@@ -16,7 +17,8 @@ import {Vertex} from "../data-structure/vertex";
   ]
 })
 export class TraceGraphComponent implements OnInit, AfterViewInit {
-  sourceAndTarget: LabelAttribCondition[][];
+  lacs: LabelAttribCondition[];
+  queryPath: QueryEdge[];
   allVertices: Map<string, Vertex>;
   @ViewChild('traceGraph') traceGraph;
   selectedNode: VisNode;
@@ -34,11 +36,9 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
     this.nodes = [];
     this.allVertices = new Map();
     // Get all conditions from bridge service then use the condition to get vertex
-    this.bridge.getSourceTarget().subscribe(st => {
-        this.sourceAndTarget = st;
-        let allConds: LabelAttribCondition[] = st[0];
-        allConds = allConds.concat(st[1]);
-        this.vertexProvider.getVertices(allConds).subscribe(d => {
+    this.bridge.getLabelAttribConditions().subscribe(st => {
+        this.lacs = st;
+        this.vertexProvider.getVertices(this.lacs).subscribe(d => {
             for (const vtx of d) {
               this.allVertices.set(vtx.dbId, vtx);
             }
@@ -46,6 +46,7 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
         );
       }
     );
+    this.bridge.getQueryPath().subscribe(queryPath => this.queryPath = queryPath)
     this.nodeCnt = 0;
   }
 
@@ -53,7 +54,7 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.traceProvider.getTraceLinks(this.sourceAndTarget[0][0], this.sourceAndTarget[1][0], this.bridge.getDynoUsage()).subscribe(links => {
+    this.traceProvider.getTraceLinks(this.lacs[0], this.bridge.getDynoUsage()).subscribe(links => {
         this.toVis(links);
         this.drawGraph(this.nodes, this.links);
       }
@@ -77,8 +78,7 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
       const targetVisId = this.registNodeAndGetVisId(rawEdge.targetDbId);
       const title = 'Method:' + rawEdge.method + ' Score:' + rawEdge.score;
       const visLink: VisEdge = {id: this.links.length, from: sourceVisId, to: targetVisId, title: title, edge: rawEdge};
-      +
-        this.links.push(visLink);
+      this.links.push(visLink);
     }
   }
 

@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {InputDisplayBridgeService} from '../services/input-display-bridge/input-display-bridge.service';
 import {Router} from '@angular/router';
 import {LabelAttribCondition} from '../data-structure/LabelAttribModels';
-import {VertexProviderService} from "../services/vertex-provider/vertex-provider.service";
+import {QueryEdge} from '../data-structure/queryEdge';
 
 @Component({
   selector: 'app-node-input',
@@ -11,29 +11,31 @@ import {VertexProviderService} from "../services/vertex-provider/vertex-provider
 })
 export class NodeInputComponent implements OnInit {
   traceDynoEnabled = false;
-  sourceVertices: LabelAttribCondition[];
-  targetVertices: LabelAttribCondition[];
+  lacs: LabelAttribCondition[];
+  queryPath: QueryEdge[];
 
 
-  constructor(private bridge: InputDisplayBridgeService, private router: Router, private vertexProvider: VertexProviderService) {
-    this.sourceVertices = [];
-    this.targetVertices = [];
+  constructor(private bridge: InputDisplayBridgeService, private router: Router) {
+    this.lacs = [];
+    this.queryPath = [];
   }
 
   ngOnInit() {
   }
 
-  receiveSources(income: LabelAttribCondition[]): void {
-    this.sourceVertices = income;
+  receiveLabelAttribConditions(income: LabelAttribCondition[]): void {
+    this.lacs = income;
   }
 
-  receiveTarget(income: LabelAttribCondition[]): void {
-    this.targetVertices = income;
+  receiveQueryPath(queryPath: QueryEdge[]) {
+    this.queryPath = queryPath;
   }
+
 
   clickSubmit(): void {
-    console.log('Conditions submitted:', this.sourceVertices, this.targetVertices)
-    this.bridge.addSourceTarget([this.sourceVertices, this.targetVertices]);
+    console.log('Conditions submitted:', this.lacs, this.queryPath)
+    this.bridge.addLabelAttribConditions(this.lacs);
+    this.bridge.addQueryPath(this.queryPath);
     this.bridge.setDynoUsage(this.traceDynoEnabled);
     this.router.navigateByUrl('traceGraph');
   }

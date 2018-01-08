@@ -14,6 +14,8 @@ import {InputDisplayBridgeService} from './services/input-display-bridge/input-d
 import {TraceQueryService} from './services/trace-query/trace-query.service';
 import {HttpClientModule} from '@angular/common/http';
 import {KeysPipe} from './pips/keyPip';
+import {TimInputComponent} from './node-input/tim-input/tim-input.component';
+import {ConditionDialogComponent} from './node-input/tim-input/condition-dialog/condition-dialog.component';
 
 
 @NgModule({
@@ -22,7 +24,9 @@ import {KeysPipe} from './pips/keyPip';
     NodeInputComponent,
     SelectBoxComponent,
     TraceGraphComponent,
-    KeysPipe
+    KeysPipe,
+    TimInputComponent,
+    ConditionDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -32,6 +36,9 @@ import {KeysPipe} from './pips/keyPip';
     FormsModule, ReactiveFormsModule,
     AppRoutingModule,
     HttpClientModule,
+  ],
+  entryComponents: [
+    ConditionDialogComponent
   ],
   providers: [VertexProviderService, InputDisplayBridgeService, TraceQueryService],
   bootstrap: [AppComponent]

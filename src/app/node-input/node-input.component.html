@@ -1,7 +1,7 @@
 <mat-toolbar color="primary">Trace Input</mat-toolbar>
 <div>
-  <app-select-box (reportCondition)="receiveSources($event)">Source Vertex Input</app-select-box>
-  <app-select-box (reportCondition)="receiveTarget($event)">TargetVertex Input</app-select-box>
+  <app-tim-input (reportConditions)="receiveLabelAttribConditions($event)"
+                 (reportQueryEdges)="receiveQueryPath($event)"></app-tim-input>
   <mat-card fxLayoutAlign="space-between center">
     <mat-checkbox [(ngModel)]="traceDynoEnabled">Enable Trace Engine</mat-checkbox>
     <button class="mat-primary" mat-raised-button (click)="clickSubmit()"> Submit</button>

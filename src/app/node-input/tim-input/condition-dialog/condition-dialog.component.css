@@ -1,0 +1,37 @@
+/**
+Boxes display and selectAdd vertices
+ */
+
+.list_box {
+  padding: 0;
+  overflow-x: auto;
+  overflow-y: scroll;
+  height: 100%;
+  border: solid;
+}
+
+.list_box_title {
+  text-align: center;
+}
+
+.table_cell {
+  overflow: hidden;
+  max-width: 600px;
+  max-height: 50px
+}
+
+.cell_input {
+  width: 100%;
+}
+
+label {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.input_table {
+  overflow-y: auto;
+}
+
+
+
