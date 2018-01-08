@@ -22,7 +22,6 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
   selectedNode: VisNode;
   selectedNodeEdges: VisEdge[];
   nodeBook: Map<string, number>; // Record dbId to numeric id used in graph and by VisEdge
-  verseNodeBook: Map<number, string>;
   links: VisEdge[];
   nodes: VisNode[];
   nodeCnt: number;
@@ -31,7 +30,6 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
               private traceProvider: TraceQueryService,
               private vertexProvider: VertexProviderService) {
     this.nodeBook = new Map<string, number>();
-    this.verseNodeBook = new Map<number, string>();
     this.links = [];
     this.nodes = [];
     this.allVertices = new Map();
@@ -40,7 +38,6 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
         this.sourceAndTarget = st;
         let allConds: LabelAttribCondition[] = st[0];
         allConds = allConds.concat(st[1]);
-        console.log('all conditions:', allConds);
         this.vertexProvider.getVertices(allConds).subscribe(d => {
             for (const vtx of d) {
               this.allVertices.set(vtx.dbId, vtx);
@@ -56,10 +53,8 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.traceProvider.getTraceLinks(this.sourceAndTarget[0][0], this.sourceAndTarget[1][0]).subscribe(l => {
-        this.toVis(l);
-        console.log('debug - nodes to draw:', this.nodes);
-        console.log('debug - links to draw:', this.links);
+    this.traceProvider.getTraceLinks(this.sourceAndTarget[0][0], this.sourceAndTarget[1][0], this.bridge.getDynoUsage()).subscribe(links => {
+        this.toVis(links);
         this.drawGraph(this.nodes, this.links);
       }
     );
@@ -67,12 +62,10 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
 
   registNodeAndGetVisId(dbId: string): number {
     if (!this.nodeBook.has(dbId)) {
-      const label = this.allVertices.get(dbId).artifType;
-      this.nodeBook.set(dbId, this.nodeCnt);
-      this.verseNodeBook.set(this.nodeCnt, dbId);
-      this.nodeCnt++;
+      const vtx: Vertex = this.allVertices.get(dbId);
+      this.nodeBook.set(dbId, this.nodeCnt++);
       const visId = this.nodeBook.get(dbId);
-      const visNode = {id: visId, label: label};
+      const visNode = {id: visId, label: vtx.artifType, vertex: vtx};
       this.nodes.push(visNode);
     }
     return this.nodeBook.get(dbId);
@@ -83,16 +76,15 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
       const sourceVisId = this.registNodeAndGetVisId(rawEdge.sourceDbId);
       const targetVisId = this.registNodeAndGetVisId(rawEdge.targetDbId);
       const title = 'Method:' + rawEdge.method + ' Score:' + rawEdge.score;
-      const visLink: VisEdge = {id: this.links.length, from: sourceVisId, to: targetVisId, title: title};
-      this.links.push(visLink);
+      const visLink: VisEdge = {id: this.links.length, from: sourceVisId, to: targetVisId, title: title, edge: rawEdge};
+      +
+        this.links.push(visLink);
     }
   }
 
   drawGraph(visNodes: VisNode[], visEdges: VisEdge[]): void {
     const nodes = new vis.DataSet(visNodes);
     const edges = new vis.DataSet(visEdges);
-    console.log('VisNode:', visNodes);
-    console.log('VisEdge:', visEdges);
     const data = {
       nodes: nodes,
       edges: edges
@@ -113,15 +105,12 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
     };
     const network = new vis.Network(this.traceGraph.nativeElement, data, options);
     network.on('selectNode', (params) => {
-      console.log('pre node=', this.selectedNode);
       this.selectedNode = nodes.get(params.nodes[0]);
-      console.log('node=', this.selectedNode);
       const edgeIds = params.edges;
       this.selectedNodeEdges = [];
       for (const id of edgeIds) {
         this.selectedNodeEdges.push(edges.get(id));
       }
-      console.log('edges=', this.selectedNodeEdges);
     });
   }
 }

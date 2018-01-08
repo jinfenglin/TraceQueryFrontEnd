@@ -9,6 +9,7 @@ import {Vertex} from "../../data-structure/vertex";
 @Injectable()
 export class InputDisplayBridgeService {
   labelAndConditions: LabelAttribCondition[][];
+  traecDynoEnabled: boolean;
   vertices: Vertex[];
   queryPath: QueryEdge[];
 
@@ -23,6 +24,14 @@ export class InputDisplayBridgeService {
 
   addSourceTarget(data: LabelAttribCondition[][]): void {
     this.labelAndConditions = data;
+  }
+
+  setDynoUsage(traceDynoEnabled: boolean) {
+    this.traecDynoEnabled = traceDynoEnabled;
+  }
+
+  getDynoUsage() {
+    return this.traecDynoEnabled;
   }
 
   addVertices(data: Vertex[]): void {

@@ -1,13 +1,26 @@
-<p>
-  trace-graph works!
-</p>
+<mat-toolbar color="primary">Trace Graph</mat-toolbar>
 <mat-card>
   <div #traceGraph class="graphArea"></div>
 </mat-card>
-<div fxLayout='row' fxLayoutAlign='space-between center' class='info_board'>
-
+<div fxLayout='row' fxLayoutAlign='space-between center'>
   <mat-card fxFlex="50%" class="info_board">
-    <!--{{selectedNode.id}}-->
+    <div *ngIf="selectedNode">
+      <mat-card-header>
+        <mat-card-title style="font-weight: bold;font-size: larger">{{selectedNode.vertex.artifType}} -
+          {{selectedNode.vertex.dbId}}
+        </mat-card-title>
+        <mat-card-subtitle>{{selectedNode.vertex.artifId}}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item *ngFor='let attKey of selectedNode.vertex|keys: "other"'>
+            <label>{{attKey | uppercase}}:</label>
+            {{selectedNode.vertex.other[attKey]}}
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+    </div>
   </mat-card>
 
   <mat-card fxFlex="50%" class="info_board">
@@ -16,6 +29,7 @@
         <div matLine><h4>This is {{edge.id}}</h4></div>
         <div matLine>
           <span> {{edge.from}} {{edge.to}} </span>
+          <mat-divider></mat-divider>
         </div>
         <mat-divider></mat-divider>
       </mat-list-item>

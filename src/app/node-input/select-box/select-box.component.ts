@@ -16,7 +16,6 @@ export class SelectBoxComponent implements OnInit {
   separatorKeysCodes = [ENTER, COMMA];
   inputVals: Map<string, Map<string, string>>;
   dataSource: FlatLabelAttribDataSource;
-
   idTable: any;
 
   @Output()

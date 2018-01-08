@@ -4,4 +4,5 @@ export class VisEdge {
   title: string; // Title show on the edge when mouse hover
   from: number; // VisId of the source node
   to: number; // VisId of the target node
+  edge: Edge;
 }

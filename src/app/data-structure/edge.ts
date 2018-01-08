@@ -5,6 +5,6 @@ export class Edge {
   sourceDbId: string;
   targetDbId: string;
   score: number;
-  linkType: string;
   method: string;
+  linkType: string;
 }

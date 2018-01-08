@@ -21,7 +21,6 @@ export class VertexProviderService {
     httpParam = httpParam.append('conditions', JSON.stringify(conditions));
     console.log('conditions:', JSON.stringify(conditions))
     const vertices = this.http.get<Vertex[]>(url, {params: httpParam});
-    vertices.subscribe(data => console.log(data));
     return vertices;
   }
 

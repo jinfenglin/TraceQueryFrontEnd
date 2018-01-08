@@ -9,13 +9,12 @@ export class TraceQueryService {
   constructor(private http: HttpClient) {
   }
 
-  getTraceLinks(source: LabelAttribCondition, target: LabelAttribCondition): Observable<Edge[]> {
+  getTraceLinks(source: LabelAttribCondition, target: LabelAttribCondition, useDyno: boolean): Observable<Edge[]> {
     const url = 'http://localhost:8080/TraceQueryEngine-1.0-SNAPSHOT/api/getTraceLinks';
     let httpParam = new HttpParams();
     httpParam = httpParam.append('source', JSON.stringify(source));
     httpParam = httpParam.append('target', JSON.stringify(target));
     const links = this.http.get<Edge[]>(url, {params: httpParam});
-    links.subscribe(data => console.log('Trace link for', source.label, 'and', target.label, ':', data));
     return links;
   }
 }

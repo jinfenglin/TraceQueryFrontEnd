@@ -34,6 +34,7 @@ export class NodeInputComponent implements OnInit {
   clickSubmit(): void {
     console.log('Conditions submitted:', this.sourceVertices, this.targetVertices)
     this.bridge.addSourceTarget([this.sourceVertices, this.targetVertices]);
+    this.bridge.setDynoUsage(this.traceDynoEnabled);
     this.router.navigateByUrl('traceGraph');
   }
 }
