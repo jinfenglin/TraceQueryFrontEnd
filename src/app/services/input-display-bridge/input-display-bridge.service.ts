@@ -8,21 +8,20 @@ import {Vertex} from '../../data-structure/vertex';
 
 @Injectable()
 export class InputDisplayBridgeService {
-  labelAndConditions: LabelAttribCondition[];
+  labelAndConditions: Map<string, LabelAttribCondition>;
   traecDynoEnabled: boolean;
-  vertices: Vertex[];
   queryPath: QueryEdge[];
 
   constructor() {
-    this.labelAndConditions = [];
+    this.labelAndConditions = new Map<string, LabelAttribCondition>();
     this.queryPath = [];
   }
 
-  getLabelAttribConditions(): Observable<LabelAttribCondition[]> {
+  getLabelAttribConditions(): Observable<Map<string, LabelAttribCondition>> {
     return of(this.labelAndConditions);
   }
 
-  addLabelAttribConditions(data: LabelAttribCondition[]): void {
+  addLabelAttribConditions(data: Map<string, LabelAttribCondition>): void {
     this.labelAndConditions = data;
   }
 

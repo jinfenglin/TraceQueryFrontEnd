@@ -11,19 +11,19 @@ import {QueryEdge} from '../data-structure/queryEdge';
 })
 export class NodeInputComponent implements OnInit {
   traceDynoEnabled = false;
-  lacs: LabelAttribCondition[];
+  lacs: Map<string, LabelAttribCondition>;
   queryPath: QueryEdge[];
 
 
   constructor(private bridge: InputDisplayBridgeService, private router: Router) {
-    this.lacs = [];
+    this.lacs = new Map < string, LabelAttribCondition >();
     this.queryPath = [];
   }
 
   ngOnInit() {
   }
 
-  receiveLabelAttribConditions(income: LabelAttribCondition[]): void {
+  receiveLabelAttribConditions(income: Map<string, LabelAttribCondition>): void {
     this.lacs = income;
   }
 

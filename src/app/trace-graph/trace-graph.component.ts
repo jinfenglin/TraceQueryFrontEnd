@@ -8,7 +8,10 @@ import {LabelAttribCondition} from '../data-structure/LabelAttribModels';
 import {Edge} from '../data-structure/edge';
 import {VertexProviderService} from '../services/vertex-provider/vertex-provider.service';
 import {Vertex} from '../data-structure/vertex';
-import {QueryEdge} from "../data-structure/queryEdge";
+import {QueryEdge} from '../data-structure/queryEdge';
+import {Observable} from 'rxjs/Observable';
+import {forkJoin} from "rxjs/observable/forkJoin";
+
 @Component({
   selector: 'app-trace-graph',
   templateUrl: './trace-graph.component.html',
@@ -17,7 +20,7 @@ import {QueryEdge} from "../data-structure/queryEdge";
   ]
 })
 export class TraceGraphComponent implements OnInit, AfterViewInit {
-  lacs: LabelAttribCondition[];
+  lacs: Map<string, LabelAttribCondition>;
   queryPath: QueryEdge[];
   allVertices: Map<string, Vertex>;
   @ViewChild('traceGraph') traceGraph;
@@ -38,7 +41,7 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
     // Get all conditions from bridge service then use the condition to get vertex
     this.bridge.getLabelAttribConditions().subscribe(st => {
         this.lacs = st;
-        this.vertexProvider.getVertices(this.lacs).subscribe(d => {
+        this.vertexProvider.getVertices(Array.from(this.lacs.values())).subscribe(d => {
             for (const vtx of d) {
               this.allVertices.set(vtx.dbId, vtx);
             }
@@ -46,7 +49,7 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
         );
       }
     );
-    this.bridge.getQueryPath().subscribe(queryPath => this.queryPath = queryPath)
+    this.bridge.getQueryPath().subscribe(queryPath => this.queryPath = queryPath);
     this.nodeCnt = 0;
   }
 
@@ -54,11 +57,21 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.traceProvider.getTraceLinks(this.lacs[0], this.bridge.getDynoUsage()).subscribe(links => {
-        this.toVis(links);
-        this.drawGraph(this.nodes, this.links);
+    const obs: Observable<Edge[]> [] = [];
+    for (const queryEdge of this.queryPath) {
+      const sourceLac = this.lacs.get(queryEdge.sourceLabel);
+      const targetLac = this.lacs.get(queryEdge.targetLabel);
+      const linkObs = this.traceProvider.getTraceLinks(sourceLac, targetLac, this.bridge.getDynoUsage());
+      obs.push(linkObs);
+    }
+    forkJoin(obs).subscribe(links => {
+      let tmp = [];
+      for (const edge of links) {
+        tmp = tmp.concat(edge);
       }
-    );
+      this.toVis(tmp);
+      this.drawGraph(this.nodes, this.links);
+    });
   }
 
   registNodeAndGetVisId(dbId: string): number {

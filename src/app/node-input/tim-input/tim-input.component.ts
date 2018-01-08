@@ -4,6 +4,7 @@ import {MatDialog} from "@angular/material";
 import {ConditionDialogComponent} from "./condition-dialog/condition-dialog.component";
 import {LabelAttribCondition} from "../../data-structure/LabelAttribModels";
 import {QueryEdge} from "../../data-structure/queryEdge";
+
 @Component({
   selector: 'app-tim-input',
   templateUrl: './tim-input.component.html',
@@ -19,8 +20,8 @@ export class TimInputComponent implements OnInit, AfterViewInit {
   queryPath: QueryEdge[];
 
   @Output()
-  reportConditions: EventEmitter<LabelAttribCondition[]> =
-    new EventEmitter<LabelAttribCondition[]>();
+  reportConditions: EventEmitter<Map<string, LabelAttribCondition>> =
+    new EventEmitter<Map<string, LabelAttribCondition>>();
 
   @Output()
   reportQueryEdges: EventEmitter<QueryEdge[]> = new EventEmitter<QueryEdge[]>()
@@ -90,7 +91,7 @@ export class TimInputComponent implements OnInit, AfterViewInit {
       if (!this.lacs.has(result.label) && result.label !== '') {
         this.lacs.set(result.label, result);
         callback(boxNode);
-        this.reportConditions.emit(Array.from(this.lacs.values()));
+        this.reportConditions.emit(this.lacs);
       }
     });
   }
@@ -117,13 +118,13 @@ export class TimInputComponent implements OnInit, AfterViewInit {
           }
         }
         this.nodes.update({id: nodeId, labelAttribs: result});
-        this.reportConditions.emit(Array.from(this.lacs.values()));
+        this.reportConditions.emit(this.lacs);
       }
     });
   }
 
   addEdge(data, callback) {
-    const fromNode = this.nodes.get(data.from)
+    const fromNode = this.nodes.get(data.from);
     const toNode = this.nodes.get(data.to);
     const queryEdge = new QueryEdge(fromNode.label, toNode.label);
     console.log('queryEdge:', queryEdge);
@@ -148,7 +149,7 @@ export class TimInputComponent implements OnInit, AfterViewInit {
     const label = node.label;
     this.lacs.delete(label);
     this.queryPath = this.queryPath.filter(queryEdge =>
-    queryEdge.targetLabel !== label && queryEdge.sourceLabel !== label);
+      queryEdge.targetLabel !== label && queryEdge.sourceLabel !== label);
     callback(data);
   }
 }
