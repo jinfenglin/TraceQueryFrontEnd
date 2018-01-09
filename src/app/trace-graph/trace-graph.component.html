@@ -1,8 +1,8 @@
 <mat-toolbar color="primary">Trace Graph</mat-toolbar>
-<mat-card>
-  <div #traceGraph class="graphArea"></div>
-</mat-card>
-<div fxLayout='row' fxLayoutAlign='space-between center'>
+<mat-card style="height: 50%">
+  <div #traceGraph class="graphArea" style="height: 100%"></div>
+</mat-card >
+<div fxLayout='row' fxLayoutAlign='space-between center'style="height: 30%">
   <mat-card fxFlex="50%" class="info_board">
     <div *ngIf="selectedNode">
       <mat-card-header>
