@@ -50,7 +50,7 @@ export class TimInputComponent implements OnInit, AfterViewInit {
 
     const options = {
       width: '100%',
-      height: '600px',
+      height: '100%',
       interaction: {
         hoverConnectedEdges: false,
         hover: true

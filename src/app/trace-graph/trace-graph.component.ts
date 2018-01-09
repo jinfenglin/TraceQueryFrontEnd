@@ -105,7 +105,7 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
 
     const options = {
       width: '100%',
-      height: '400px',
+      height: '100%',
       interaction: {
         hoverConnectedEdges: false,
         hover: true

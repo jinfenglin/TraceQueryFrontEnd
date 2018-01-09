@@ -1,10 +1,12 @@
 <mat-toolbar color="primary">Trace Input</mat-toolbar>
-<div>
-  <app-tim-input (reportConditions)="receiveLabelAttribConditions($event)"
-                 (reportQueryEdges)="receiveQueryPath($event)"></app-tim-input>
-  <mat-card fxLayoutAlign="space-between center">
-    <mat-checkbox [(ngModel)]="traceDynoEnabled">Enable Trace Engine</mat-checkbox>
-    <button class="mat-primary" mat-raised-button (click)="clickSubmit()"> Submit</button>
-  </mat-card>
-</div>
+<app-tim-input (reportConditions)="receiveLabelAttribConditions($event)"
+               (reportQueryEdges)="receiveQueryPath($event)">
+</app-tim-input>
+
+<mat-card fxLayoutAlign="space-between center">
+  <mat-checkbox [(ngModel)]="traceDynoEnabled">Enable Trace Engine</mat-checkbox>
+  <button class="mat-primary" mat-raised-button (click)="clickSubmit()"> Submit</button>
+</mat-card>
+
+
 
