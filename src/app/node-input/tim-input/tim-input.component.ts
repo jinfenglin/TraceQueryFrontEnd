@@ -1,9 +1,9 @@
 import {AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
 import * as vis from 'vis';
-import {MatDialog} from "@angular/material";
-import {ConditionDialogComponent} from "./condition-dialog/condition-dialog.component";
-import {LabelAttribCondition} from "../../data-structure/LabelAttribModels";
-import {QueryEdge} from "../../data-structure/queryEdge";
+import {MatDialog} from '@angular/material';
+import {ConditionDialogComponent} from './condition-dialog/condition-dialog.component';
+import {LabelAttribCondition} from '../../data-structure/LabelAttribModels';
+import {QueryEdge} from '../../data-structure/queryEdge';
 
 @Component({
   selector: 'app-tim-input',
@@ -50,7 +50,7 @@ export class TimInputComponent implements OnInit, AfterViewInit {
 
     const options = {
       width: '100%',
-      height: '400px',
+      height: '600px',
       interaction: {
         hoverConnectedEdges: false,
         hover: true
@@ -85,15 +85,19 @@ export class TimInputComponent implements OnInit, AfterViewInit {
       data: {}
     });
     dialogRef.afterClosed().subscribe(result => {
-      // result is an LabelAttCondi
-      const boxNode = {label: result.label, labelAttribs: result};
-      // Don't allow duplicated label
-      if (!this.lacs.has(result.label) && result.label !== '') {
-        this.lacs.set(result.label, result);
-        callback(boxNode);
-        this.reportConditions.emit(this.lacs);
+        // result is an LabelAttCondi
+        if (result === 'close') {
+          return;
+        }
+        const boxNode = {label: result.label, labelAttribs: result};
+        // Don't allow duplicated label
+        if (!this.lacs.has(result.label)) {
+          this.lacs.set(result.label, result);
+          callback(boxNode);
+          this.reportConditions.emit(this.lacs);
+        }
       }
-    });
+    );
   }
 
   updateNode(nodeId: number) {
@@ -106,8 +110,12 @@ export class TimInputComponent implements OnInit, AfterViewInit {
       data: lac
     });
     dialogRef.afterClosed().subscribe(result => {
+      if (result === 'close') {
+        return;
+      }
       if (result.label === originLabel || !this.lacs.has(result.label)) {
         if (result.label !== originLabel) {
+          // Update links which connect the node
           for (const queryEdge of this.queryPath) {
             if (queryEdge.targetLabel === originLabel) {
               queryEdge.targetLabel = result.label;
@@ -116,10 +124,15 @@ export class TimInputComponent implements OnInit, AfterViewInit {
               queryEdge.sourceLabel = result.label;
             }
           }
+          // Remove the origin info
+          this.lacs.delete(originLabel);
+          this.lacs.set(result.label, result);
         }
-        this.nodes.update({id: nodeId, labelAttribs: result});
+        console.log('result label', result.label)
+        this.nodes.update({id: nodeId, label: result.label, labelAttribs: result});
         this.reportConditions.emit(this.lacs);
       }
+
     });
   }
 
@@ -149,7 +162,7 @@ export class TimInputComponent implements OnInit, AfterViewInit {
     const label = node.label;
     this.lacs.delete(label);
     this.queryPath = this.queryPath.filter(queryEdge =>
-      queryEdge.targetLabel !== label && queryEdge.sourceLabel !== label);
+    queryEdge.targetLabel !== label && queryEdge.sourceLabel !== label);
     callback(data);
   }
 }

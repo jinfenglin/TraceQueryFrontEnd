@@ -10,7 +10,7 @@ import {VertexProviderService} from '../services/vertex-provider/vertex-provider
 import {Vertex} from '../data-structure/vertex';
 import {QueryEdge} from '../data-structure/queryEdge';
 import {Observable} from 'rxjs/Observable';
-import {forkJoin} from "rxjs/observable/forkJoin";
+import {forkJoin} from 'rxjs/observable/forkJoin';
 
 @Component({
   selector: 'app-trace-graph',

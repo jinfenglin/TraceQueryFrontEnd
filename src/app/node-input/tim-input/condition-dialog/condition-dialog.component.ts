@@ -35,7 +35,7 @@ export class ConditionDialogComponent implements OnInit {
 
 
   onNoClick(): void {
-    this.dialogRef.close();
+    this.dialogRef.close('close');
   }
 
   ngOnInit() {
