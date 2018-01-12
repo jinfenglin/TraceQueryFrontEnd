@@ -16,6 +16,7 @@ import {HttpClientModule} from '@angular/common/http';
 import {KeysPipe} from './pips/keyPip';
 import {TimInputComponent} from './node-input/tim-input/tim-input.component';
 import {ConditionDialogComponent} from './node-input/tim-input/condition-dialog/condition-dialog.component';
+import {TimVisualComponent} from './node-input/tim-input/tim-visual/tim-visual.component';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import {ConditionDialogComponent} from './node-input/tim-input/condition-dialog/
     TraceGraphComponent,
     KeysPipe,
     TimInputComponent,
-    ConditionDialogComponent
+    ConditionDialogComponent,
+    TimVisualComponent
   ],
   imports: [
     BrowserModule,

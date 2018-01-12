@@ -14,7 +14,6 @@ export class NodeInputComponent implements OnInit {
   lacs: Map<string, LabelAttribCondition>;
   queryPath: QueryEdge[];
 
-
   constructor(private bridge: InputDisplayBridgeService, private router: Router) {
     this.lacs = new Map < string, LabelAttribCondition >();
     this.queryPath = [];

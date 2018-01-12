@@ -39,10 +39,8 @@ export class TimInputComponent implements OnInit, AfterViewInit {
   }
 
   draw(): void {
-    const nodesRaw = [];
-    const edgeRaw = [];
-    this.nodes = new vis.DataSet(nodesRaw);
-    this.edges = new vis.DataSet(edgeRaw);
+    this.nodes = new vis.DataSet();
+    this.edges = new vis.DataSet();
     const data = {
       nodes: this.nodes,
       edges: this.edges

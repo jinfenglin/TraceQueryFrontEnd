@@ -16,7 +16,7 @@ export class VertexProviderService {
    * @returns {any}
    */
   getVertices(conditions: LabelAttribCondition[]): Observable<Vertex[]> {
-    const url = 'http://localhost:8080/TraceQueryEngine-1.0-SNAPSHOT/';
+    const url = 'http://localhost:8080/TraceQueryEngine-1.0-SNAPSHOT/getVertices';
     let httpParam = new HttpParams();
     httpParam = httpParam.append('conditions', JSON.stringify(conditions));
     console.log('conditions:', JSON.stringify(conditions))
@@ -41,5 +41,12 @@ export class VertexProviderService {
     let res: Vertex;
     vObs.subscribe(v => res = v);
     return res;
+  }
+
+  getTIM(): any {
+    const url = 'http://localhost:8080/TraceQueryEngine-1.0-SNAPSHOT/api/getTIM';
+    const timObs = this.http.get<Vertex>(url);
+    timObs.subscribe(tim => console.log(tim));
+    return timObs;
   }
 }
