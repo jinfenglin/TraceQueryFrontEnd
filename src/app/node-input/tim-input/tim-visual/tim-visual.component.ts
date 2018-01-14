@@ -23,7 +23,23 @@ export class TimVisualComponent implements OnInit, AfterViewInit {
     );
   }
 
-  private createGraph(graph: any): void {
+  private createNodeContent(id: number, artifType: string, attribs: string[]): any {
+    let innerContentHtml = '<h3>' + artifType + '</h3>  <hr> <p>';
+    for (const attrib of attribs) {
+      innerContentHtml += attrib + '<br/>';
+    }
+    innerContentHtml += '</p>';
+
+    const node = {
+      id: id,
+      label: artifType,
+      shape: 'box',
+      title: innerContentHtml
+    }
+    return node;
+  }
+
+  private registerNodeEdge(graph: any): { nodeBook: Map<string, number>; edgeBook: Map<number, Set<number>> } {
     const nodeBook = new Map<string, number>();
     const edgeBook = new Map<number, Set<number>>();
     let cnt = 0;
@@ -31,14 +47,12 @@ export class TimVisualComponent implements OnInit, AfterViewInit {
     for (const artifType of Object.keys(graph)) {
       const linkedArtifs: string[] = graph[artifType];
       if (!nodeBook.has(artifType)) {
-        this.nodes.add({id: cnt, label: artifType});
         edgeBook.set(cnt, new Set());
         nodeBook.set(artifType, cnt++);
       }
       // Deal with the links
       for (const linkedArtif of linkedArtifs) {
         if (!nodeBook.has(linkedArtif)) {
-          this.nodes.add({id: cnt, label: linkedArtif});
           edgeBook.set(cnt, new Set());
           nodeBook.set(linkedArtif, cnt++);
         }
@@ -48,10 +62,38 @@ export class TimVisualComponent implements OnInit, AfterViewInit {
         const backEdge = {from: edgeEndId2, to: edgeEndId1};
         if (!this.hasEdge(edgeBook, forwardEdge) && !this.hasEdge(edgeBook, backEdge)) {
           edgeBook.get(edgeEndId1).add(edgeEndId2);
-          this.edges.add(forwardEdge);
         }
       }
     }
+    return {nodeBook: nodeBook, edgeBook: edgeBook};
+  }
+
+  private createGraph(graph: any): void {
+    const nodeEdgeInfo = this.registerNodeEdge(graph);
+    const nodeBook = nodeEdgeInfo.nodeBook;
+    const edgeBook = nodeEdgeInfo.edgeBook;
+    this.verticesProvier.getAttribs(Array.from(nodeBook.keys())).subscribe(flatAttribs => {
+      const labelAttribs = new Map<string, string[]>();
+      for (const labelAttrib of flatAttribs) {
+        const label = labelAttrib.label;
+        const attrib = labelAttrib.attribName;
+        if (!labelAttribs.has(label)) {
+          labelAttribs.set(label, []);
+        }
+        labelAttribs.get(label).push(attrib);
+      }
+      for (const nodeLabel of Array.from(nodeBook.keys())) {
+        const id = nodeBook.get(nodeLabel);
+        const attribs = labelAttribs.get(nodeLabel);
+        this.nodes.add(this.createNodeContent(id, nodeLabel, attribs));
+      }
+      for (const edgesFrom of Array.from(edgeBook.keys())) {
+        const edgeToMap = edgeBook.get(edgesFrom);
+        for (const edgeTo of Array.from(edgeToMap)) {
+          this.edges.add({from: edgesFrom, to: edgeTo});
+        }
+      }
+    });
   }
 
   hasEdge(edgeBook: Map<number, Set<number>>, edge: any): boolean {
@@ -66,7 +108,11 @@ export class TimVisualComponent implements OnInit, AfterViewInit {
       nodes: this.nodes,
       edges: this.edges
     };
-    const options = {}
+    const options = {
+      width: '100%',
+      height: '100%',
+
+    }
     const network = new vis.Network(this.TIMGraphe.nativeElement, data, options);
   }
 }
