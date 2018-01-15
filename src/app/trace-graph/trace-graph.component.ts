@@ -22,7 +22,7 @@ import {forkJoin} from 'rxjs/observable/forkJoin';
 export class TraceGraphComponent implements OnInit, AfterViewInit {
   lacs: Map<string, LabelAttribCondition>;
   colorBook: Map<string, string>;
-  queryPath: QueryEdge[];
+  queryEdges: QueryEdge[];
   allVertices: Map<string, Vertex>;
   @ViewChild('traceGraph') traceGraph;
   selectedNode: VisNode;
@@ -31,6 +31,8 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
   links: VisEdge[];
   nodes: VisNode[];
   nodeCnt: number;
+  tim: any;
+  extendedEdges: QueryEdge[];
 
   constructor(private bridge: InputDisplayBridgeService,
               private traceProvider: TraceQueryService,
@@ -39,6 +41,7 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
     this.links = [];
     this.nodes = [];
     this.allVertices = new Map();
+    this.extendedEdges = [];
     // Get all conditions from bridge service then use the condition to get vertex
     this.bridge.getLabelAttribConditions().subscribe(st => {
         this.lacs = st;
@@ -50,19 +53,118 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
         );
       }
     );
-    this.bridge.getQueryPath().subscribe(queryPath => this.queryPath = queryPath);
+    this.bridge.getQueryPath().subscribe(queryPath => this.queryEdges = queryPath);
     this.bridge.getColorBook().subscribe(book => this.colorBook = book);
+    // this.extendQueryEdges();
     this.nodeCnt = 0;
+  }
+
+  private extendQueryEdges() {
+    this.vertexProvider.getTIM().subscribe(tim => {
+      const timGraph = this.objectToGraph(tim['graph']);
+      const queryGraph: Map<string, string[]> = this.buildQueryGraph(this.queryEdges);
+      const waiting_set = new Set<string>();
+      const waiting_array = Array.from(queryGraph.keys());
+      queryGraph.forEach((connected, node) => waiting_set.add(node));
+      while (waiting_set.size > 0) {
+        const curNode = waiting_array.pop();
+        this.DFS(curNode, queryGraph, timGraph, [curNode]);
+        waiting_set.delete(curNode);
+      }
+      this.removeDuplication();
+    });
+  }
+
+  private buildQueryGraph(queryEdges: QueryEdge[]): Map<string, string[]> {
+    const queryGraph = new Map<string, string[]>();
+    for (const edge of queryEdges) {
+      if (!queryGraph.has(edge.sourceLabel)) {
+        queryGraph.set(edge.sourceLabel, []);
+      }
+      if (!queryGraph.has(edge.targetLabel)) {
+        queryGraph.set(edge.targetLabel, []);
+      }
+      queryGraph.get(edge.sourceLabel).push(edge.targetLabel);
+      queryGraph.get(edge.targetLabel).push(edge.sourceLabel);
+    }
+    return queryGraph;
+  }
+
+  private pathToQueryEdges(path: string[]): QueryEdge[] {
+    const queryPath = [];
+    for (let i = 1; i < path.length; i++) {
+      queryPath.push(new QueryEdge(path[i - 1], path[i]));
+    }
+    return queryPath;
+  }
+
+  private objectToGraph(graph: any) {
+    const timGraph = new Map<string, string[]>();
+    for (const artifType of Object.keys(graph)) {
+      const linkedArtifs: string[] = graph[artifType];
+      timGraph.set(artifType, linkedArtifs);
+    }
+    return timGraph;
+  }
+
+  private DFS(curNode: string, queryGraph: Map<string, string[]>, timGraph: Map<string, string[]>, curPath: string[]) {
+    for (const nextNode of timGraph.get(curNode)) {
+      if (curPath.includes(nextNode)) {
+        continue;
+      }
+      if (queryGraph.has(nextNode)) {
+        curPath.push(nextNode);
+        this.extendedEdges = this.extendedEdges.concat(this.pathToQueryEdges(curPath));
+        curPath.pop();
+      } else {
+        curPath.push(nextNode);
+        this.DFS(nextNode, queryGraph, timGraph, curPath);
+        curPath.pop();
+      }
+    }
+  }
+
+  private removeDuplication() {
+    const reducedEdges: QueryEdge[] = [];
+    const records = new Map<string, string[]>();
+    for (const edge of this.extendedEdges) {
+      if (!records.has(edge.sourceLabel)) {
+        records.set(edge.sourceLabel, []);
+      }
+      if (!records.has(edge.targetLabel)) {
+        records.set(edge.targetLabel, []);
+      }
+      if (!records.get(edge.sourceLabel).includes(edge.targetLabel) && !records.get(edge.sourceLabel).includes(edge.targetLabel)) {
+        records.get(edge.sourceLabel).push(edge.targetLabel);
+        records.get(edge.targetLabel).push(edge.sourceLabel);
+        reducedEdges.push(edge);
+      }
+    }
+    this.extendedEdges = reducedEdges;
   }
 
   ngOnInit() {
   }
 
+  /**
+   * After extendsion, not all nodes in the query edge can find its lac in collected lacs
+   * @param edgeEndLabel
+   * @returns {LabelAttribCondition}
+   */
+  private getLacsForQueryEdge(edgeEndLabel: string): LabelAttribCondition {
+    let lac = new LabelAttribCondition(edgeEndLabel, new Map<string, string>());
+    if (this.lacs.has(edgeEndLabel)) {
+      lac = this.lacs.get(edgeEndLabel);
+    }
+    return lac;
+  }
+
   ngAfterViewInit() {
     const obs: Observable<Edge[]> [] = [];
-    for (const queryEdge of this.queryPath) {
-      const sourceLac = this.lacs.get(queryEdge.sourceLabel);
-      const targetLac = this.lacs.get(queryEdge.targetLabel);
+    this.extendQueryEdges();
+    for (const queryEdge of this.extendedEdges) {
+      const sourceLac = this.getLacsForQueryEdge(queryEdge.sourceLabel);
+      const targetLac = this.getLacsForQueryEdge(queryEdge.targetLabel);
       const linkObs = this.traceProvider.getTraceLinks(sourceLac, targetLac, this.bridge.getDynoUsage());
       obs.push(linkObs);
     }

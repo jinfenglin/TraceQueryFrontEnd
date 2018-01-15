@@ -11,6 +11,7 @@ export class TraceQueryService {
 
   getTraceLinks(source: LabelAttribCondition, target: LabelAttribCondition, useDyno: boolean): Observable<Edge[]> {
     const url = 'http://localhost:8080/TraceQueryEngine-1.0-SNAPSHOT/api/getTraceLinks';
+    console.log('sending trace request...');
     let httpParam = new HttpParams();
     httpParam = httpParam.append('source', JSON.stringify(source));
     httpParam = httpParam.append('target', JSON.stringify(target));
