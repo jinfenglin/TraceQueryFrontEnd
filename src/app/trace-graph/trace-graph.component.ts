@@ -30,49 +30,24 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
   nodeBook: Map<string, number>; // Record dbId to numeric id used in graph and by VisEdge
   links: VisEdge[];
   nodes: VisNode[];
+  visNodeBook: Map<number, VisNode>; // quick access for visNode through visId
   nodeCnt: number;
-  tim: any;
   extendedEdges: QueryEdge[];
+  reducedLinks: Set<VisEdge>;
 
   constructor(private bridge: InputDisplayBridgeService,
               private traceProvider: TraceQueryService,
               private vertexProvider: VertexProviderService) {
     this.nodeBook = new Map<string, number>();
+    this.visNodeBook = new Map<number, VisNode>();
     this.links = [];
     this.nodes = [];
     this.allVertices = new Map();
     this.extendedEdges = [];
-    // Get all conditions from bridge service then use the condition to get vertex
-    this.bridge.getLabelAttribConditions().subscribe(st => {
-        this.lacs = st;
-        this.vertexProvider.getVertices(Array.from(this.lacs.values())).subscribe(d => {
-            for (const vtx of d) {
-              this.allVertices.set(vtx.dbId, vtx);
-            }
-          }
-        );
-      }
-    );
+    this.reducedLinks = new Set<VisEdge>();
     this.bridge.getQueryPath().subscribe(queryPath => this.queryEdges = queryPath);
     this.bridge.getColorBook().subscribe(book => this.colorBook = book);
-    // this.extendQueryEdges();
     this.nodeCnt = 0;
-  }
-
-  private extendQueryEdges() {
-    this.vertexProvider.getTIM().subscribe(tim => {
-      const timGraph = this.objectToGraph(tim['graph']);
-      const queryGraph: Map<string, string[]> = this.buildQueryGraph(this.queryEdges);
-      const waiting_set = new Set<string>();
-      const waiting_array = Array.from(queryGraph.keys());
-      queryGraph.forEach((connected, node) => waiting_set.add(node));
-      while (waiting_set.size > 0) {
-        const curNode = waiting_array.pop();
-        this.DFS(curNode, queryGraph, timGraph, [curNode]);
-        waiting_set.delete(curNode);
-      }
-      this.removeDuplication();
-    });
   }
 
   private buildQueryGraph(queryEdges: QueryEdge[]): Map<string, string[]> {
@@ -107,7 +82,7 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
     return timGraph;
   }
 
-  private DFS(curNode: string, queryGraph: Map<string, string[]>, timGraph: Map<string, string[]>, curPath: string[]) {
+  private TIM_DFS(curNode: string, queryGraph: Map<string, string[]>, timGraph: Map<string, string[]>, curPath: string[]) {
     for (const nextNode of timGraph.get(curNode)) {
       if (curPath.includes(nextNode)) {
         continue;
@@ -118,7 +93,7 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
         curPath.pop();
       } else {
         curPath.push(nextNode);
-        this.DFS(nextNode, queryGraph, timGraph, curPath);
+        this.TIM_DFS(nextNode, queryGraph, timGraph, curPath);
         curPath.pop();
       }
     }
@@ -146,36 +121,106 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
   ngOnInit() {
   }
 
-  /**
-   * After extendsion, not all nodes in the query edge can find its lac in collected lacs
-   * @param edgeEndLabel
-   * @returns {LabelAttribCondition}
-   */
-  private getLacsForQueryEdge(edgeEndLabel: string): LabelAttribCondition {
-    let lac = new LabelAttribCondition(edgeEndLabel, new Map<string, string>());
-    if (this.lacs.has(edgeEndLabel)) {
-      lac = this.lacs.get(edgeEndLabel);
+  private updateLac(label: string) {
+    if (!this.lacs.has(label)) {
+      this.lacs.set(label, new LabelAttribCondition(label, new Map<string, string>()));
     }
-    return lac;
   }
 
   ngAfterViewInit() {
-    const obs: Observable<Edge[]> [] = [];
-    this.extendQueryEdges();
-    for (const queryEdge of this.extendedEdges) {
-      const sourceLac = this.getLacsForQueryEdge(queryEdge.sourceLabel);
-      const targetLac = this.getLacsForQueryEdge(queryEdge.targetLabel);
-      const linkObs = this.traceProvider.getTraceLinks(sourceLac, targetLac, this.bridge.getDynoUsage());
-      obs.push(linkObs);
-    }
-    forkJoin(obs).subscribe(links => {
-      let tmp = [];
-      for (const edge of links) {
-        tmp = tmp.concat(edge);
+    this.vertexProvider.getTIM().subscribe(tim => {
+      // Extend the query Path
+      const timGraph = this.objectToGraph(tim['graph']);
+      const queryGraph: Map<string, string[]> = this.buildQueryGraph(this.queryEdges);
+      const waiting_set = new Set<string>();
+      const waiting_array = Array.from(queryGraph.keys());
+      queryGraph.forEach((connected, node) => waiting_set.add(node));
+      while (waiting_set.size > 0) {
+        const curNode = waiting_array.pop();
+        this.TIM_DFS(curNode, queryGraph, timGraph, [curNode]);
+        waiting_set.delete(curNode);
       }
-      this.toVis(tmp);
-      this.drawGraph(this.nodes, this.links);
+      this.removeDuplication();
+      // Get all conditions from bridge service then use the condition to get vertex
+      this.bridge.getLabelAttribConditions().subscribe(st => {
+          this.lacs = st;
+          // Update the vertices that will be used
+          for (const queryEdge of this.extendedEdges) {
+            this.updateLac(queryEdge.sourceLabel);
+            this.updateLac(queryEdge.targetLabel);
+          }
+          this.vertexProvider.getVertices(Array.from(this.lacs.values())).subscribe(d => {
+              for (const vtx of d) {
+                this.allVertices.set(vtx.dbId, vtx);
+              }
+              // Graph data preparation
+              const obs: Observable<Edge[]> [] = [];
+              for (const queryEdge of this.extendedEdges) {
+                const sourceLac = this.lacs.get(queryEdge.sourceLabel);
+                const targetLac = this.lacs.get(queryEdge.targetLabel);
+                const linkObs = this.traceProvider.getTraceLinks(sourceLac, targetLac, this.bridge.getDynoUsage());
+                obs.push(linkObs);
+              }
+              forkJoin(obs).subscribe(links => {
+                let tmp = [];
+                for (const edge of links) {
+                  tmp = tmp.concat(edge);
+                }
+                const graph = this.toVis(tmp);
+                this.searchPath(graph);
+                const reducedNodes = new Set<VisNode>();
+                this.reducedLinks.forEach((edge) => {
+                  reducedNodes.add(this.visNodeBook.get(edge.from));
+                  reducedNodes.add(this.visNodeBook.get(edge.to));
+                })
+                // this.drawGraph(this.nodes, this.links);
+                this.drawGraph(Array.from(reducedNodes), Array.from(this.reducedLinks));
+              });
+            }
+          );
+        }
+      );
     });
+  }
+
+  private searchPath(graph: Map<number, VisEdge[]>): void {
+    const startLabel = 'Code';
+    const endLabel = 'Improvement';
+    const startNodes = this.nodes.filter(node => node.label === startLabel);
+    const curLabels = new Set<string>(); // Labels included already, don't need loop in label level
+    for (const node of startNodes) {
+      this.nodeDFS(node, endLabel, curLabels, [], graph);
+    }
+  }
+
+  private nodeDFS(node: VisNode, endLabel: string, curLabels: Set<string>,
+                  curPath: VisEdge[], graph: Map<number, VisEdge[]>) {
+    if (node.label === endLabel) {
+      for (const edge of curPath) {
+        this.reducedLinks.add(edge);
+      }
+      return;
+    }
+
+    for (const edge of graph.get(node.id)) {
+      const connectedNode = this.visNodeBook.get(this.getConnectedNodeId(edge, node.id));
+      if (curLabels.has(connectedNode.label)) {
+        continue;
+      }
+      curLabels.add(connectedNode.label);
+      curPath.push(edge);
+      this.nodeDFS(connectedNode, endLabel, curLabels, curPath, graph);
+      curLabels.delete(connectedNode.label);
+      curPath.pop();
+    }
+  }
+
+  private getConnectedNodeId(edge: VisEdge, nodeId: number) {
+    if (edge.from !== nodeId) {
+      return edge.from;
+    } else {
+      return edge.to;
+    }
   }
 
   registNodeAndGetVisId(dbId: string): number {
@@ -185,18 +230,29 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
       const visId = this.nodeBook.get(dbId);
       const visNode = {id: visId, label: vtx.artifType, vertex: vtx, color: this.colorBook.get(vtx.artifType)};
       this.nodes.push(visNode);
+      this.visNodeBook.set(visId, visNode);
     }
     return this.nodeBook.get(dbId);
   }
 
-  toVis(rawEdges: Edge[]): void {
+  toVis(rawEdges: Edge[]): Map<number, VisEdge[]> {
+    const graph = new Map<number, VisEdge[]>();
     for (const rawEdge of rawEdges) {
       const sourceVisId = this.registNodeAndGetVisId(rawEdge.sourceDbId);
       const targetVisId = this.registNodeAndGetVisId(rawEdge.targetDbId);
       const title = 'Method:' + rawEdge.method + ' Score:' + rawEdge.score;
       const visLink: VisEdge = {id: this.links.length, from: sourceVisId, to: targetVisId, title: title, edge: rawEdge};
       this.links.push(visLink);
+      if (!graph.has(sourceVisId)) {
+        graph.set(sourceVisId, []);
+      }
+      if (!graph.has(targetVisId)) {
+        graph.set(targetVisId, []);
+      }
+      graph.get(sourceVisId).push(visLink);
+      graph.get(targetVisId).push(visLink);
     }
+    return graph;
   }
 
   drawGraph(visNodes: VisNode[], visEdges: VisEdge[]): void {
