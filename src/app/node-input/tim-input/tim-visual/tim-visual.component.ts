@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
 import {VertexProviderService} from '../../../services/vertex-provider/vertex-provider.service';
 import * as vis from 'vis';
 
@@ -11,6 +11,7 @@ export class TimVisualComponent implements OnInit, AfterViewInit {
   @ViewChild('TIMGraph') TIMGraphe;
   nodes: any;
   edges: any;
+  @Output() labelsEmitter = new EventEmitter<string[]>();
 
   constructor(private verticesProvier: VertexProviderService) {
     this.nodes = new vis.DataSet();
@@ -65,6 +66,7 @@ export class TimVisualComponent implements OnInit, AfterViewInit {
         }
       }
     }
+    this.labelsEmitter.emit(Array.from(nodeBook.keys()));
     return {nodeBook: nodeBook, edgeBook: edgeBook};
   }
 

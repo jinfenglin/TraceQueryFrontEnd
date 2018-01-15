@@ -15,16 +15,16 @@ export class TimInputComponent implements OnInit, AfterViewInit {
   network: any;
   nodes: any;
   edges: any;
-
+  labels: string[];
   lacs: Map<string, LabelAttribCondition>;
   queryPath: QueryEdge[];
 
   @Output()
   reportConditions: EventEmitter<Map<string, LabelAttribCondition>> =
-    new EventEmitter<Map<string, LabelAttribCondition>>();
+    new EventEmitter<Map<string, LabelAttribCondition>>(); // Notify parent what labels and attributes are selected
 
   @Output()
-  reportQueryEdges: EventEmitter<QueryEdge[]> = new EventEmitter<QueryEdge[]>()
+  reportQueryEdges: EventEmitter<QueryEdge[]> = new EventEmitter<QueryEdge[]>(); // Notify parent the path of query
 
   ngAfterViewInit(): void {
     this.draw();
@@ -80,17 +80,18 @@ export class TimInputComponent implements OnInit, AfterViewInit {
     const dialogRef = this.dialog.open(ConditionDialogComponent, {
       width: '60%',
       height: '80%',
-      data: {}
+      data: {labels: Array.from(this.labels)}
     });
     dialogRef.afterClosed().subscribe(result => {
         // result is an LabelAttCondi
         if (result === 'close') {
           return;
         }
-        const boxNode = {label: result.label, labelAttribs: result};
+        const lac: LabelAttribCondition = result.labelAttribs;
+        const boxNode = {label: lac.label, labelAttribs: lac, color: result.color};
         // Don't allow duplicated label
-        if (!this.lacs.has(result.label)) {
-          this.lacs.set(result.label, result);
+        if (!this.lacs.has(lac.label)) {
+          this.lacs.set(lac.label, lac);
           callback(boxNode);
           this.reportConditions.emit(this.lacs);
         }
@@ -102,35 +103,35 @@ export class TimInputComponent implements OnInit, AfterViewInit {
     const graphNode = this.nodes.get(nodeId);
     const lac = graphNode['labelAttribs'];
     const originLabel = lac.label;
+    console.log('read lac:', lac);
     const dialogRef = this.dialog.open(ConditionDialogComponent, {
       width: '60%',
       height: '80%',
-      data: lac
+      data: {labels: this.labels, labelAttribs: lac}
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result === 'close') {
         return;
       }
-      if (result.label === originLabel || !this.lacs.has(result.label)) {
-        if (result.label !== originLabel) {
+      const res_lac: LabelAttribCondition = result.labelAttribs;
+      if (res_lac.label === originLabel || !this.lacs.has(res_lac.label)) {
+        if (res_lac.label !== originLabel) {
           // Update links which connect the node
           for (const queryEdge of this.queryPath) {
             if (queryEdge.targetLabel === originLabel) {
-              queryEdge.targetLabel = result.label;
+              queryEdge.targetLabel = res_lac.label;
             }
             if (queryEdge.sourceLabel === originLabel) {
-              queryEdge.sourceLabel = result.label;
+              queryEdge.sourceLabel = res_lac.label;
             }
           }
           // Remove the origin info
           this.lacs.delete(originLabel);
-          this.lacs.set(result.label, result);
+          this.lacs.set(res_lac.label, res_lac);
         }
-        console.log('result label', result.label)
-        this.nodes.update({id: nodeId, label: result.label, labelAttribs: result});
+        this.nodes.update({id: nodeId, label: res_lac.label, labelAttribs: res_lac, color: result.color});
         this.reportConditions.emit(this.lacs);
       }
-
     });
   }
 
@@ -162,5 +163,9 @@ export class TimInputComponent implements OnInit, AfterViewInit {
     this.queryPath = this.queryPath.filter(queryEdge =>
     queryEdge.targetLabel !== label && queryEdge.sourceLabel !== label);
     callback(data);
+  }
+
+  receiveLabels(labels: string[]): void {
+    this.labels = labels;
   }
 }

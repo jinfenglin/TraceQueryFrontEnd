@@ -17,7 +17,7 @@ import {KeysPipe} from './pips/keyPip';
 import {TimInputComponent} from './node-input/tim-input/tim-input.component';
 import {ConditionDialogComponent} from './node-input/tim-input/condition-dialog/condition-dialog.component';
 import {TimVisualComponent} from './node-input/tim-input/tim-visual/tim-visual.component';
-
+import { ColorPickerModule } from 'ngx-color-picker';
 
 @NgModule({
   declarations: [
@@ -38,6 +38,7 @@ import {TimVisualComponent} from './node-input/tim-input/tim-visual/tim-visual.c
     FormsModule, ReactiveFormsModule,
     AppRoutingModule,
     HttpClientModule,
+    ColorPickerModule
   ],
   entryComponents: [
     ConditionDialogComponent

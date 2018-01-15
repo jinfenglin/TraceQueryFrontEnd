@@ -2,10 +2,21 @@
   <!-- The condition input card -->
   <div fxFlex="1 1 50%">
     <mat-card fxLayout="column" style="height: 100%">
-      <div>
-        <mat-form-field class="cell_input">
-          <input matInput [(ngModel)]="labelBuffer" (keyup.enter)="addLabel()">
+      <div fxLayout="row">
+        <mat-form-field #labelSelectionForm>
+          <mat-select placeholder="Chose Artifact" [formControl]="labelSelectControl" required [(ngModel)]="label"
+                      (ngModelChange)="addLabel()">
+            <mat-option *ngFor="let label of labels" [value]="label">
+              {{label}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="labelSelectControl.hasError('required')">Please choose a label</mat-error>
         </mat-form-field>
+        <div fxLayoutAlign="center center" style="width: 100%">
+          <div class="color_picker_icon" [(colorPicker)]="color" [cpPresetColors]="availableColors"
+               [style.background]="color" (colorPickerChange)="updateColor()">Chose Color
+          </div>
+        </div>
       </div>
 
       <div class="input_table">
@@ -29,38 +40,44 @@
         </mat-table>
       </div>
     </mat-card>
+    <mat-toolbar>
+      <div fxLayout="row" fxLayoutAlign="end center">
+        <button mat-raised-button class="mat-primary " style="margin-top: 20px"
+                (click)="previewCondition()"> View
+        </button>
+        <button mat-raised-button [disabled]="label===undefined" class="mat-primary " style="margin-top: 20px"
+                [mat-dialog-close]="data"> Submit
+        </button>
+        <button mat-raised-button class="mat-primary " style="margin-top: 20px"
+                (click)="onNoClick()"> Close
+        </button>
+      </div>
+    </mat-toolbar>
   </div>
 
   <!-- The node illustration card -->
   <div fxFlex="1 1 50%">
-    <mat-card style="height: 100%">
+    <mat-card fxLayout="column" style="height: 100%">
       <mat-list class="list_box" id="selected">
-        <mat-list-item *ngFor="let vtx of filteredVertices">
-          <h3 mat-line><span>{{vtx.artifType | uppercase}} </span><span>{{vtx.artifId}} </span>
-          </h3>
-          <p mat-line="" *ngFor='let key of vtx|keys: "other"' style="overflow-x: hidden; max-width: 400px">
-            <span>{{key | uppercase}}:</span>
-            <span>{{vtx.other[key]}}</span>
-          </p>
-          <mat-divider mat-line=""></mat-divider>
-        </mat-list-item>
+        <div *ngIf="filteredVertices!== undefined">
+          <mat-list-item *ngFor="let vtx of filteredVertices.slice(0,100)">
+            <h3 mat-line><span>{{vtx.artifType | uppercase}} </span><span>{{vtx.artifId}} </span>
+            </h3>
+            <p mat-line="" *ngFor='let key of vtx|keys: "other"' style="overflow-x: hidden; max-width: 400px">
+              <span>{{key | uppercase}}:</span>
+              <span>{{vtx.other[key]}}</span>
+            </p>
+            <mat-divider mat-line=""></mat-divider>
+          </mat-list-item>
+        </div>
       </mat-list>
     </mat-card>
+    <mat-toolbar>
+      <span *ngIf="filteredVertices!== undefined">Selected Vertices Number: {{filteredVertices.length}}</span>
+    </mat-toolbar>
   </div>
 </div>
-<mat-toolbar>
-  <div fxLayout="row" fxLayoutAlign="end center">
-    <button mat-raised-button class="mat-primary " style="margin-top: 20px"
-            (click)="previewCondition()"> View
-    </button>
-    <button mat-raised-button class="mat-primary " style="margin-top: 20px"
-            [mat-dialog-close]="data"> Submit
-    </button>
-    <button mat-raised-button class="mat-primary " style="margin-top: 20px"
-            (click)="onNoClick()"> Close
-    </button>
-  </div>
-</mat-toolbar>
+
 
 
 

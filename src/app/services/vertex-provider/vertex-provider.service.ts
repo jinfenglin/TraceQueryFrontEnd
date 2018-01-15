@@ -16,7 +16,7 @@ export class VertexProviderService {
    * @returns {any}
    */
   getVertices(conditions: LabelAttribCondition[]): Observable<Vertex[]> {
-    const url = 'http://localhost:8080/TraceQueryEngine-1.0-SNAPSHOT/getVertices';
+    const url = 'http://localhost:8080/TraceQueryEngine-1.0-SNAPSHOT/api/getVertices';
     let httpParam = new HttpParams();
     httpParam = httpParam.append('conditions', JSON.stringify(conditions));
     console.log('conditions:', JSON.stringify(conditions))

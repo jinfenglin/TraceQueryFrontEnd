@@ -1,14 +1,14 @@
 <div fxLayout="row" style="height: 80%">
-  <div fxFlex="1 1 50%" style="height: 100%">
+  <mat-card fxFlex="1 1 50%" style="height: 100%;">
     <div #inputGraph style="height: 100%">
     </div>
-  </div>
+  </mat-card>
 
-  <div fxFlex="1 1 50%">
-    <app-tim-visual style="height: 100%">
+  <mat-card fxFlex="1 1 50%">
+    <app-tim-visual (labelsEmitter)="receiveLabels($event)" style="height: 100%">
 
     </app-tim-visual>
-  </div>
+  </mat-card>
 
 </div>
 
