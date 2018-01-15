@@ -21,6 +21,7 @@ import {forkJoin} from 'rxjs/observable/forkJoin';
 })
 export class TraceGraphComponent implements OnInit, AfterViewInit {
   lacs: Map<string, LabelAttribCondition>;
+  colorBook: Map<string, string>;
   queryPath: QueryEdge[];
   allVertices: Map<string, Vertex>;
   @ViewChild('traceGraph') traceGraph;
@@ -50,6 +51,7 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
       }
     );
     this.bridge.getQueryPath().subscribe(queryPath => this.queryPath = queryPath);
+    this.bridge.getColorBook().subscribe(book => this.colorBook = book);
     this.nodeCnt = 0;
   }
 
@@ -79,7 +81,7 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
       const vtx: Vertex = this.allVertices.get(dbId);
       this.nodeBook.set(dbId, this.nodeCnt++);
       const visId = this.nodeBook.get(dbId);
-      const visNode = {id: visId, label: vtx.artifType, vertex: vtx};
+      const visNode = {id: visId, label: vtx.artifType, vertex: vtx, color: this.colorBook.get(vtx.artifType)};
       this.nodes.push(visNode);
     }
     return this.nodeBook.get(dbId);

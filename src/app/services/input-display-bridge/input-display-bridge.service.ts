@@ -11,6 +11,7 @@ export class InputDisplayBridgeService {
   labelAndConditions: Map<string, LabelAttribCondition>;
   traecDynoEnabled: boolean;
   queryPath: QueryEdge[];
+  colorBook: Map<string, string>;
 
   constructor() {
     this.labelAndConditions = new Map<string, LabelAttribCondition>();
@@ -41,4 +42,11 @@ export class InputDisplayBridgeService {
     return of(this.queryPath);
   }
 
+  addColorBook(colorBook: Map<string, string>): void {
+    this.colorBook = colorBook;
+  }
+
+  getColorBook(): Observable<Map<string, string>> {
+    return of(this.colorBook);
+  }
 }

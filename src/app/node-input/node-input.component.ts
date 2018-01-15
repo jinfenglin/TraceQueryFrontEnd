@@ -13,9 +13,10 @@ export class NodeInputComponent implements OnInit {
   traceDynoEnabled = false;
   lacs: Map<string, LabelAttribCondition>;
   queryPath: QueryEdge[];
+  colorBook: Map<string, string>;
 
   constructor(private bridge: InputDisplayBridgeService, private router: Router) {
-    this.lacs = new Map < string, LabelAttribCondition >();
+    this.lacs = new Map<string, LabelAttribCondition>();
     this.queryPath = [];
   }
 
@@ -30,12 +31,17 @@ export class NodeInputComponent implements OnInit {
     this.queryPath = queryPath;
   }
 
+  receiveColorBook(colorBook: Map<string, string>) {
+    this.colorBook = colorBook;
+  }
+
 
   clickSubmit(): void {
     console.log('Conditions submitted:', this.lacs, this.queryPath)
     this.bridge.addLabelAttribConditions(this.lacs);
     this.bridge.addQueryPath(this.queryPath);
     this.bridge.setDynoUsage(this.traceDynoEnabled);
+    this.bridge.addColorBook(this.colorBook);
     this.router.navigateByUrl('traceGraph');
   }
 }

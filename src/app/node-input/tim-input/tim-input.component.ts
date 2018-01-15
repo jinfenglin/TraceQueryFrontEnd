@@ -18,6 +18,7 @@ export class TimInputComponent implements OnInit, AfterViewInit {
   labels: string[];
   lacs: Map<string, LabelAttribCondition>;
   queryPath: QueryEdge[];
+  colorBook: Map<string, string>;
 
   @Output()
   reportConditions: EventEmitter<Map<string, LabelAttribCondition>> =
@@ -26,6 +27,9 @@ export class TimInputComponent implements OnInit, AfterViewInit {
   @Output()
   reportQueryEdges: EventEmitter<QueryEdge[]> = new EventEmitter<QueryEdge[]>(); // Notify parent the path of query
 
+  @Output()
+  reportColorBook: EventEmitter<Map<string, string>> = new EventEmitter<Map<string, string>>();
+
   ngAfterViewInit(): void {
     this.draw();
   }
@@ -33,6 +37,7 @@ export class TimInputComponent implements OnInit, AfterViewInit {
   constructor(public dialog: MatDialog) {
     this.lacs = new Map<string, LabelAttribCondition>();
     this.queryPath = [];
+    this.colorBook = new Map<string, string>();
   }
 
   ngOnInit() {
@@ -89,11 +94,14 @@ export class TimInputComponent implements OnInit, AfterViewInit {
         }
         const lac: LabelAttribCondition = result.labelAttribs;
         const boxNode = {label: lac.label, labelAttribs: lac, color: result.color};
+
         // Don't allow duplicated label
         if (!this.lacs.has(lac.label)) {
           this.lacs.set(lac.label, lac);
           callback(boxNode);
+          this.colorBook.set(lac.label, result.color);
           this.reportConditions.emit(this.lacs);
+          this.reportColorBook.emit(this.colorBook);
         }
       }
     );
@@ -131,6 +139,7 @@ export class TimInputComponent implements OnInit, AfterViewInit {
         }
         this.nodes.update({id: nodeId, label: res_lac.label, labelAttribs: res_lac, color: result.color});
         this.reportConditions.emit(this.lacs);
+        this.colorBook.set(res_lac.label, result.color);
       }
     });
   }
