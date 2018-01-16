@@ -12,6 +12,7 @@ export class InputDisplayBridgeService {
   traecDynoEnabled: boolean;
   queryPath: QueryEdge[];
   colorBook: Map<string, string>;
+  startEndLabel: { startLabel: string, endLabel: string };
 
   constructor() {
     this.labelAndConditions = new Map<string, LabelAttribCondition>();
@@ -44,6 +45,14 @@ export class InputDisplayBridgeService {
 
   addColorBook(colorBook: Map<string, string>): void {
     this.colorBook = colorBook;
+  }
+
+  addStartEnd(startEndLabel: any) {
+    this.startEndLabel = startEndLabel;
+  }
+
+  getStartEndLabel(): Observable<any> {
+    return of(this.startEndLabel);
   }
 
   getColorBook(): Observable<Map<string, string>> {

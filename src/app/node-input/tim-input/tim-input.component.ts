@@ -19,6 +19,8 @@ export class TimInputComponent implements OnInit, AfterViewInit {
   lacs: Map<string, LabelAttribCondition>;
   queryPath: QueryEdge[];
   colorBook: Map<string, string>;
+  startLabel: string;
+  endLabel: string;
 
   @Output()
   reportConditions: EventEmitter<Map<string, LabelAttribCondition>> =
@@ -29,6 +31,9 @@ export class TimInputComponent implements OnInit, AfterViewInit {
 
   @Output()
   reportColorBook: EventEmitter<Map<string, string>> = new EventEmitter<Map<string, string>>();
+
+  @Output()
+  reprotStartEnd: EventEmitter<{ startLabel: string, endLabel: string }> = new EventEmitter();
 
   ngAfterViewInit(): void {
     this.draw();
@@ -94,7 +99,6 @@ export class TimInputComponent implements OnInit, AfterViewInit {
         }
         const lac: LabelAttribCondition = result.labelAttribs;
         const boxNode = {label: lac.label, labelAttribs: lac, color: result.color};
-
         // Don't allow duplicated label
         if (!this.lacs.has(lac.label)) {
           this.lacs.set(lac.label, lac);
@@ -102,6 +106,13 @@ export class TimInputComponent implements OnInit, AfterViewInit {
           this.colorBook.set(lac.label, result.color);
           this.reportConditions.emit(this.lacs);
           this.reportColorBook.emit(this.colorBook);
+          if (result.role === 'start') {
+            this.startLabel = lac.label;
+            this.reprotStartEnd.emit({startLabel: this.startLabel, endLabel: this.endLabel});
+          } else if (result.role === 'end') {
+            this.endLabel = lac.label;
+            this.reprotStartEnd.emit({startLabel: this.startLabel, endLabel: this.endLabel});
+          }
         }
       }
     );
@@ -112,16 +123,30 @@ export class TimInputComponent implements OnInit, AfterViewInit {
     const lac = graphNode['labelAttribs'];
     const originLabel = lac.label;
     console.log('read lac:', lac);
+    let role = null;
+    if (this.startLabel === lac.label) {
+      role = 'start';
+    }
+    if (this.endLabel === lac.label) {
+      role = 'end';
+    }
     const dialogRef = this.dialog.open(ConditionDialogComponent, {
       width: '60%',
       height: '80%',
-      data: {labels: this.labels, labelAttribs: lac}
+      data: {labels: this.labels, labelAttribs: lac, role: role}
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result === 'close') {
         return;
       }
       const res_lac: LabelAttribCondition = result.labelAttribs;
+      if (result.role === 'start') {
+        this.startLabel = res_lac.label;
+        this.reprotStartEnd.emit({startLabel: this.startLabel, endLabel: this.endLabel});
+      } else if (result.role === 'end') {
+        this.endLabel = res_lac.label;
+        this.reprotStartEnd.emit({startLabel: this.startLabel, endLabel: this.endLabel});
+      }
       if (res_lac.label === originLabel || !this.lacs.has(res_lac.label)) {
         if (res_lac.label !== originLabel) {
           // Update links which connect the node

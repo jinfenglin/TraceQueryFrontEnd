@@ -20,6 +20,7 @@ export class ConditionDialogComponent implements OnInit {
   inputVals: Map<string, string>
   dataSource: FlatLabelAttribDataSource; // Data source for the table
   filteredVertices: Vertex[];
+  role: string;
 
   constructor(public dialogRef: MatDialogRef<ConditionDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any, // data will be returned as result
@@ -29,6 +30,7 @@ export class ConditionDialogComponent implements OnInit {
     // Read the available labels and color if it exists
     this.labels = data.labels;
     this.color = data.color;
+    this.role = data.role;
     if (data.labelAttribs) {
       const lac: LabelAttribCondition = data.labelAttribs;
       this.label = lac.label;
@@ -93,5 +95,9 @@ export class ConditionDialogComponent implements OnInit {
    */
   updateColor(): void {
     this.data['color'] = this.color;
+  }
+
+  updateRole(): void {
+    this.data['role'] = this.role;
   }
 }

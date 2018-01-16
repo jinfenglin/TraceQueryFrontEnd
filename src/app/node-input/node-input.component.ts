@@ -14,6 +14,7 @@ export class NodeInputComponent implements OnInit {
   lacs: Map<string, LabelAttribCondition>;
   queryPath: QueryEdge[];
   colorBook: Map<string, string>;
+  startEndLabel: { startLabel: string, endLabel: string };
 
   constructor(private bridge: InputDisplayBridgeService, private router: Router) {
     this.lacs = new Map<string, LabelAttribCondition>();
@@ -35,6 +36,9 @@ export class NodeInputComponent implements OnInit {
     this.colorBook = colorBook;
   }
 
+  receiveStartEndLabel(startEndLabel: any) {
+    this.startEndLabel = startEndLabel;
+  }
 
   clickSubmit(): void {
     console.log('Conditions submitted:', this.lacs, this.queryPath)
@@ -42,6 +46,7 @@ export class NodeInputComponent implements OnInit {
     this.bridge.addQueryPath(this.queryPath);
     this.bridge.setDynoUsage(this.traceDynoEnabled);
     this.bridge.addColorBook(this.colorBook);
+    this.bridge.addStartEnd(this.startEndLabel);
     this.router.navigateByUrl('traceGraph');
   }
 }

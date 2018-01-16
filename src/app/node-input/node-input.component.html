@@ -1,7 +1,9 @@
 <mat-toolbar color="primary">Trace Input</mat-toolbar>
 <app-tim-input (reportConditions)="receiveLabelAttribConditions($event)"
                (reportQueryEdges)="receiveQueryPath($event)"
-               (reportColorBook)="receiveColorBook($event)">
+               (reportColorBook)="receiveColorBook($event)"
+               (reprotStartEnd)="receiveStartEndLabel($event)"
+>
 </app-tim-input>
 
 <mat-card fxLayoutAlign="space-between center">

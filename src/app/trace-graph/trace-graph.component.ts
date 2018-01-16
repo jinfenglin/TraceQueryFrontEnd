@@ -34,6 +34,9 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
   nodeCnt: number;
   extendedEdges: QueryEdge[];
   reducedLinks: Set<VisEdge>;
+  startLabel: string;
+  endLabel: string;
+  isLoading = true;
 
   constructor(private bridge: InputDisplayBridgeService,
               private traceProvider: TraceQueryService,
@@ -47,6 +50,10 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
     this.reducedLinks = new Set<VisEdge>();
     this.bridge.getQueryPath().subscribe(queryPath => this.queryEdges = queryPath);
     this.bridge.getColorBook().subscribe(book => this.colorBook = book);
+    this.bridge.getStartEndLabel().subscribe(startEndLabel => {
+      this.startLabel = startEndLabel.startLabel;
+      this.endLabel = startEndLabel.endLabel;
+    });
     this.nodeCnt = 0;
   }
 
@@ -172,9 +179,11 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
                 this.reducedLinks.forEach((edge) => {
                   reducedNodes.add(this.visNodeBook.get(edge.from));
                   reducedNodes.add(this.visNodeBook.get(edge.to));
-                })
+                });
                 // this.drawGraph(this.nodes, this.links);
+                console.log('node #:', reducedNodes.size, 'edge #:', this.reducedLinks.size);
                 this.drawGraph(Array.from(reducedNodes), Array.from(this.reducedLinks));
+                this.isLoading = false;
               });
             }
           );
@@ -184,12 +193,10 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
   }
 
   private searchPath(graph: Map<number, VisEdge[]>): void {
-    const startLabel = 'Code';
-    const endLabel = 'Improvement';
-    const startNodes = this.nodes.filter(node => node.label === startLabel);
+    const startNodes = this.nodes.filter(node => node.label === this.startLabel);
     const curLabels = new Set<string>(); // Labels included already, don't need loop in label level
     for (const node of startNodes) {
-      this.nodeDFS(node, endLabel, curLabels, [], graph);
+      this.nodeDFS(node, this.endLabel, curLabels, [], graph);
     }
   }
 

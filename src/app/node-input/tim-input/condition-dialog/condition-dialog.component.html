@@ -12,10 +12,17 @@
           </mat-select>
           <mat-error *ngIf="labelSelectControl.hasError('required')">Please choose a label</mat-error>
         </mat-form-field>
-        
-        <div fxLayoutAlign="center center" style="width: 100%">
-          <div class="color_picker_icon" [(colorPicker)]="color" [cpPresetColors]="availableColors"
-               [style.background]="color" (colorPickerChange)="updateColor()">Chose Color
+
+        <div fxLayoutAlign="space-around center" style="width: 100%">
+          <div class="color_picker_icon" [(colorPicker)]="color" [cpPresetColors]="availableColors" fxFlex="1 1 30%"
+               [style.background]="color" (colorPickerChange)="updateColor()">Choose Color
+          </div>
+
+          <div fxFlex="1 1 30%">
+            <mat-radio-group [(ngModel)]="role" (ngModelChange)="updateRole()">
+              <mat-radio-button value="start">Start</mat-radio-button>
+              <mat-radio-button value="end">End</mat-radio-button>
+            </mat-radio-group>
           </div>
         </div>
       </div>

@@ -1,8 +1,14 @@
 <mat-toolbar color="primary">Trace Graph</mat-toolbar>
 <mat-card style="height: 50%">
-  <div #traceGraph class="graphArea" style="height: 100%"></div>
-</mat-card >
-<div fxLayout='row' fxLayoutAlign='space-between center'style="height: 30%">
+
+  <div #traceGraph class="graphArea" style="height: 100%">
+    <div *ngIf="isLoading" style="width: 100%; height: 100%" fxLayoutAlign="center center">
+      <img src="assets/spinner.gif">
+    </div>
+  </div>
+
+</mat-card>
+<div fxLayout='row' fxLayoutAlign='space-between center' style="height: 30%">
   <mat-card fxFlex="50%" class="info_board">
     <div *ngIf="selectedNode">
       <mat-card-header>
