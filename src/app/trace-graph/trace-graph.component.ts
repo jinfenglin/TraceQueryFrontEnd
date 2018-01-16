@@ -147,7 +147,7 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
         this.TIM_DFS(curNode, queryGraph, timGraph, [curNode]);
         waiting_set.delete(curNode);
       }
-      this.removeDuplication();
+      // this.removeDuplication();
       // Get all conditions from bridge service then use the condition to get vertex
       this.bridge.getLabelAttribConditions().subscribe(st => {
           this.lacs = st;
@@ -235,12 +235,20 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
       const vtx: Vertex = this.allVertices.get(dbId);
       this.nodeBook.set(dbId, this.nodeCnt++);
       const visId = this.nodeBook.get(dbId);
+      let level = 1;
+      if (this.startLabel === vtx.artifType) {
+        level = 2;
+      } else if (this.endLabel === vtx.artifType) {
+        level = 0;
+      }
       const visNode: VisNode = {
-        id: visId,
-        label: vtx.artifType,
-        vertex: vtx,
-        color: this.colorBook.get(vtx.artifType),
-      };
+          id: visId,
+          label: vtx.artifType,
+          vertex: vtx,
+          color: this.colorBook.get(vtx.artifType),
+          level: level,
+        }
+      ;
       this.nodes.push(visNode);
       this.visNodeBook.set(visId, visNode);
     }
@@ -303,7 +311,6 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
           direction: 'UD'
         }
       },
-      physics: false
     };
     const network = new vis.Network(this.traceGraph.nativeElement, data, options);
     network.on('selectNode', (params) => {
