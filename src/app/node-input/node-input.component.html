@@ -8,7 +8,10 @@
 
 <mat-card fxLayoutAlign="space-between center">
   <mat-checkbox [(ngModel)]="traceDynoEnabled">Enable Trace Engine</mat-checkbox>
-  <button class="mat-primary" mat-raised-button (click)="clickSubmit()"> Submit</button>
+  <button
+    [disabled]="startEndLabel=== undefined || startEndLabel.startLabel===undefined || startEndLabel.endLabel === undefined "
+    class="mat-primary" mat-raised-button (click)="clickSubmit()"> Submit
+  </button>
 </mat-card>
 
 
