@@ -12,6 +12,7 @@
           </mat-select>
           <mat-error *ngIf="labelSelectControl.hasError('required')">Please choose a label</mat-error>
         </mat-form-field>
+        
         <div fxLayoutAlign="center center" style="width: 100%">
           <div class="color_picker_icon" [(colorPicker)]="color" [cpPresetColors]="availableColors"
                [style.background]="color" (colorPickerChange)="updateColor()">Chose Color

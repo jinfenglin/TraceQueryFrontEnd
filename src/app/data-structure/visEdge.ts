@@ -5,4 +5,5 @@ export class VisEdge {
   from: number; // VisId of the source node
   to: number; // VisId of the target node
   edge: Edge;
+  color: any;
 }

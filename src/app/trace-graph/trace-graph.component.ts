@@ -228,7 +228,12 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
       const vtx: Vertex = this.allVertices.get(dbId);
       this.nodeBook.set(dbId, this.nodeCnt++);
       const visId = this.nodeBook.get(dbId);
-      const visNode = {id: visId, label: vtx.artifType, vertex: vtx, color: this.colorBook.get(vtx.artifType)};
+      const visNode: VisNode = {
+        id: visId,
+        label: vtx.artifType,
+        vertex: vtx,
+        color: this.colorBook.get(vtx.artifType),
+      };
       this.nodes.push(visNode);
       this.visNodeBook.set(visId, visNode);
     }
@@ -241,7 +246,18 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
       const sourceVisId = this.registNodeAndGetVisId(rawEdge.sourceDbId);
       const targetVisId = this.registNodeAndGetVisId(rawEdge.targetDbId);
       const title = 'Method:' + rawEdge.method + ' Score:' + rawEdge.score;
-      const visLink: VisEdge = {id: this.links.length, from: sourceVisId, to: targetVisId, title: title, edge: rawEdge};
+      const edgeColor = {};
+      if (rawEdge.method !== 'default') {
+        edgeColor['color'] = '#ff0000';
+      }
+      const visLink: VisEdge = {
+        id: this.links.length,
+        from: sourceVisId,
+        to: targetVisId,
+        title: title,
+        edge: rawEdge,
+        color: edgeColor
+      };
       this.links.push(visLink);
       if (!graph.has(sourceVisId)) {
         graph.set(sourceVisId, []);
@@ -274,7 +290,13 @@ export class TraceGraphComponent implements OnInit, AfterViewInit {
         color: {
           hover: '#1e841d',
         },
-      }
+      },
+      layout: {
+        hierarchical: {
+          direction: 'UD'
+        }
+      },
+      physics: false
     };
     const network = new vis.Network(this.traceGraph.nativeElement, data, options);
     network.on('selectNode', (params) => {
